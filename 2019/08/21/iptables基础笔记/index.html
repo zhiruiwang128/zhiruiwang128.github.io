@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>iptables基础笔记 - R博客</title>
+
+
+    <meta name="description" content="实现IP转发的功能echo 1 &amp;gt; /proc/sys/net/ipv4/ip_forward对iptables配置文件的理解：/etc/sysconfig/iptables下记录的规则是从下到上读顺序读的。所以允许要在拒绝上面。而在终端下执行的语句则：先拒绝 再允许。">
+<meta name="keywords" content="iptables">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iptables基础笔记">
+<meta property="og:url" content="http://wangzhirui.com/2019/08/21/iptables基础笔记/index.html">
+<meta property="og:site_name" content="R博客">
+<meta property="og:description" content="实现IP转发的功能echo 1 &amp;gt; /proc/sys/net/ipv4/ip_forward对iptables配置文件的理解：/etc/sysconfig/iptables下记录的规则是从下到上读顺序读的。所以允许要在拒绝上面。而在终端下执行的语句则：先拒绝 再允许。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://wangzhirui.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-02-18T07:24:16.247Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iptables基础笔记">
+<meta name="twitter:description" content="实现IP转发的功能echo 1 &amp;gt; /proc/sys/net/ipv4/ip_forward对iptables配置文件的理解：/etc/sysconfig/iptables下记录的规则是从下到上读顺序读的。所以允许要在拒绝上面。而在终端下执行的语句则：先拒绝 再允许。">
+<meta name="twitter:image" content="http://wangzhirui.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="iptables基础笔记" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档文章</a>
+                
+                <a class="navbar-item"
+                href="/categories">文章分类</a>
+                
+                <a class="navbar-item"
+                href="/tags">文章标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+<a class="navbar-item search">
+<span id="busuanzi_container_site_pv">
+  |  本站总访问量<span id="busuanzi_value_site_pv"</span>次
+</span>
+<span id="busuanzi_container_site_uv">
+  |  本站访客数<span id="busuanzi_value_site_uv"></span>人次  |
+</span>
+</a>
+
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-08-21T03:21:11.000Z">2019-08-21</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    15 分钟 读完 (大约 2285 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                iptables基础笔记
+            
+        </h1>
+        <div class="content">
+            <p><img src="https://i.loli.net/2020/02/18/9kzvwla7ELrmRu8.jpg" alt="index.jpg"></p>
+<h3 id="实现IP转发的功能"><a href="#实现IP转发的功能" class="headerlink" title="实现IP转发的功能"></a>实现IP转发的功能</h3><pre><code>echo 1 &gt; /proc/sys/net/ipv4/ip_forward</code></pre><h2 id="对iptables配置文件的理解："><a href="#对iptables配置文件的理解：" class="headerlink" title="对iptables配置文件的理解："></a>对iptables配置文件的理解：</h2><p>/etc/sysconfig/iptables下记录的规则是从下到上读顺序读的。所以允许要在拒绝上面。<br>而在终端下执行的语句则：先拒绝 再允许。</p>
+<a id="more"></a>
+
+
+<blockquote>
+<p>如果是部署远程的防火墙设备，一定要在计划任务中设置，定时关闭防火墙(建议5分钟关闭一次)，否则你会很痛苦；</p>
+</blockquote>
+<blockquote>
+<p>*/5 * * * * /etc/init.d/iptables stop</p>
+</blockquote>
+<p>屏蔽单个IP的命令</p>
+<pre><code>iptables -I INPUT -s 123.45.6.7 -j DROP       #屏蔽单个IP的命令</code></pre><h2 id="iptables-save-与service-iptables-save区别"><a href="#iptables-save-与service-iptables-save区别" class="headerlink" title="iptables-save 与service iptables save区别"></a>iptables-save 与service iptables save区别</h2><p>iptables防火墙规则的保存与恢复</p>
+<blockquote>
+<p>iptables-save把规则保存到文件中，再由目录rc.d下的脚本（/etc/rc.d/init.d/iptables）自动装载</p>
+</blockquote>
+<p>使用命令iptables-save来保存规则。一般用</p>
+<pre><code>iptables-save &gt; /etc/sysconfig/iptables</code></pre><p>生成保存规则的文件 /etc/sysconfig/iptables，<br>也可以用</p>
+<pre><code>service iptables save</code></pre><p>它能把规则自动保存在/etc/sysconfig/iptables中。<br>当计算机启动时，rc.d下的脚本将用命令iptables-restore调用这个文件，从而就自动恢复了规则。</p>
+<p>-m state  指定包的状态</p>
+<h2 id="设置默认策略"><a href="#设置默认策略" class="headerlink" title="设置默认策略"></a>设置默认策略</h2><pre><code>iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP</code></pre><p>iptables命令参数解释</p>
+<pre><code>-A 在指定链的末尾添加（append）一条新的规则
+-D 删除（delete）指定链中的某一条规则，可以按规则序号和内容删除
+-I 在指定链中插入（insert）一条新的规则，默认在第一行添加
+-R 修改、替换（replace）指定链中的某一条规则，可以按规则序号和内容替换
+-L 列出（list）指定链中所有的规则进行查看
+-E 重命名用户定义的链，不改变链本身
+-F 清空（flush）
+-N 新建（new-chain）一条用户自己定义的规则链
+-X 删除指定表中用户自定义的规则链（delete-chain）
+-P 设置指定链的默认策略（policy）
+-Z 将所有表的所有链的字节和数据包计数器清零
+-n 使用数字形式（numeric）显示输出结果
+-v 查看规则表详细信息（verbose）的信息
+-V 查看版本(version)
+-h 获取帮助（help）</code></pre><blockquote>
+<p>“-i” 表示接口。不过，-i 和 -o 都表示接口，-i 表示输入时的接口，而 -o 特指输出用的接口。</p>
+</blockquote>
+<blockquote>
+<p>-A和-I。其中-A是添加到规则的末尾；<br>-I可以插入到指定位置，没有指定位置的话默认插入到规则的首部。</p>
+</blockquote>
+<br>
+
+<h2 id="删除指定规则"><a href="#删除指定规则" class="headerlink" title="删除指定规则"></a>删除指定规则</h2><blockquote>
+<p>先用iptables -L -n –line-numbers 找出规则的序号</p>
+</blockquote>
+<pre><code class="javascript">[root@tomcat ~]# iptables -L -n --line-numbers
+Chain INPUT (policy DROP)
+num  target     prot opt source               destination         
+1    ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpt:23 
+2    ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0           state RELATED,ESTABLISHED 
+3    ACCEPT     icmp --  0.0.0.0/0            0.0.0.0/0           
+4    ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0           
+5    ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           state NEW tcp dpt:22 
+6    REJECT     all  --  0.0.0.0/0            0.0.0.0/0           reject-with icmp-host-prohibited 
+7    ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpts:138:140 
+
+Chain FORWARD (policy ACCEPT)
+num  target     prot opt source               destination         
+1    REJECT     all  --  0.0.0.0/0            0.0.0.0/0           reject-with icmp-host-prohibited 
+
+Chain OUTPUT (policy DROP)
+num  target     prot opt source               destination         
+1    ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpt:22 
+2    ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp spt:22 </code></pre>
+<p>如：删除OUTPUT链的第一条规则</p>
+<pre><code>iptables -D OUTPUT 1</code></pre><p>如果：OUTPUT 是默认策略为：DROP，要开放给10.0.2.0/24是网段访问，则要添加</p>
+<pre><code>iptables -A OUTPUT -d 10.0.2.0/24 -j ACCEPT</code></pre><h2 id="iptables-预设的两个主要的-table-，各个table里面的chains与各个chains所代表的意义"><a href="#iptables-预设的两个主要的-table-，各个table里面的chains与各个chains所代表的意义" class="headerlink" title="iptables 预设的两个主要的 table ，各个table里面的chains与各个chains所代表的意义"></a>iptables 预设的两个主要的 table ，各个table里面的chains与各个chains所代表的意义</h2><p> filter 为预设的 Table，里头预设的链有：<br><br>o INPUT：为来自外部，想要进入主机的封包；<br><br>o OUTPUT：为来自主机，想要离开主机的封包；<br><br>o FORWARD：为主机内部网域与外部网域的封包(不论进或者出)，但该<br>封包不会进入主机。<br></p>
+<blockquote>
+<p> 还有 nat 这个 table：</p>
+</blockquote>
+<p>o PREROUTING：进行路由之前的封包传送过程<br><br>o OUTPUT：离开主机的封包传送过程；<br><br>o POSTROUTING：已经经过路由了，然后才进行的过滤规则。<br></p>
+<h2 id="禁ping"><a href="#禁ping" class="headerlink" title="禁ping"></a>禁ping</h2><pre><code>iptables -I INPUT -p icmp --icmp-type 8 -j DROP</code></pre><h2 id="接受dns的请求"><a href="#接受dns的请求" class="headerlink" title="接受dns的请求"></a>接受dns的请求</h2><pre><code class="shell">iptables -A INPUT -p tcp --sport 53 -j ACCEPT
+iptables -A INPUT -p udp --sport 53 -j ACCEPT</code></pre>
+<h2 id="对REJECT与DROP的理解"><a href="#对REJECT与DROP的理解" class="headerlink" title="对REJECT与DROP的理解"></a>对REJECT与DROP的理解</h2><p>我们来举一个例子，让各位读者更直观地理解这两个拒绝动作的不同之处。比如有一天您正在家里看电视，突然听到有人敲门，您透过防盗门的猫眼一看是推销商品的，便会在不需要的情况下开门并拒绝他们（REJECT）。但如果您看到的是债主带了十几个小弟来讨债，此时不仅要拒绝开门，还要默不作声，伪装成自己不在家的样子（DROP）。</p>
+<blockquote>
+<p>规则链的默认策略拒绝动作只能是DROP，而不能是REJECT。</p>
+</blockquote>
+<h2 id="－j-LOG-在-var-log-messages将记录相应的日志"><a href="#－j-LOG-在-var-log-messages将记录相应的日志" class="headerlink" title="－j LOG  在/var/log/messages将记录相应的日志"></a>－j LOG  在/var/log/messages将记录相应的日志</h2><pre><code>Oct 30 16:36:54 tomcat kernel: IN=eth1 OUT= MAC=08:00:27:b2:e4:b3:52:54:00:12:35:02:08:00 SRC=10.0.2.2 DST=10.0.2.15 LEN=136 TOS=0x00 PREC=0x00 TTL=64 ID=2074 PROTO=TCP SPT=57748 DPT=22 WINDOW=65535 RES=0x00 ACK PSH URGP=0 </code></pre><h2 id="配置文件各表格式："><a href="#配置文件各表格式：" class="headerlink" title="配置文件各表格式："></a>配置文件各表格式：</h2><pre><code># Generated by iptables-save v1.2.6a on Wed Apr 24 10:19:17 2002
+*filter
+:INPUT ACCEPT [404:19766]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [530:43376]
+COMMIT
+# Completed on Wed Apr 24 10:19:17 2002
+# Generated by iptables-save v1.2.6a on Wed Apr 24 10:19:17 2002
+*mangle
+:PREROUTING ACCEPT [451:22060]
+:INPUT ACCEPT [451:22060]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [594:47151]
+:POSTROUTING ACCEPT [594:47151]
+COMMIT
+# Completed on Wed Apr 24 10:19:17 2002
+# Generated by iptables-save v1.2.6a on Wed Apr 24 10:19:17 2002
+*nat
+:PREROUTING ACCEPT [0:0]
+:POSTROUTING ACCEPT [3:450]
+:OUTPUT ACCEPT [3:450]
+COMMIT
+# Completed on Wed Apr 24 10:19:17 2002</code></pre><p>我们来解释一下这个输出格式。<br></p>
+<p>#后面的是注释。<br><br>表都以*<table-name>开始，例如*mangle。<br><br>每个表都包含链和规则，<br><br>链的详细说明是:<chain-name> <chain-policy><br> [<packet-counter>:<byte-counter>]。例如，链的名字是 PREROUTING，策略是ACCEPT，然后是包记数器和字节计数器，这两个计数器和iptables -L -v输出中用到的计数器一样。<br><br>每个表的描述都以关键字COMMIT结束，它说明在这一点，就要把规则装入内核了。</p>
+<h2 id="Table"><a href="#Table" class="headerlink" title="Table"></a>Table</h2><p>Table （） Explanation （注释）</p>
+<h3 id="表名-nat"><a href="#表名-nat" class="headerlink" title="表名:nat"></a>表名:nat</h3><p>注释:nat表的主要用处是网络地址转换，即Network Address Translation，缩写为NAT。做过NAT操作的数据包的地址就被改变了，当然这种改变是根据我们的规则进行 的。属于一个流的包只会经过这个表一次。如果第一个包被允许做NAT或Masqueraded，那么余下的包都会自 动地被做相同的操作。也就是说，余下的包不会再通过这个表，一个一个的被NAT，而是自动地完成。这就 是我们为什么不应该在这个表中做任何过滤的主要原因，对这一点，后面会有更加详细的讨论。PREROUTING 链的作用是在包刚刚到达防火墙时改变它的目的地址，如果需要的话。OUTPUT链改变本地产生的包的目的地 址。POSTROUTING链在包就要离开防火墙之前改变其源地址。</p>
+<h3 id="表名-mangle"><a href="#表名-mangle" class="headerlink" title="表名: mangle"></a>表名: mangle</h3><p>注释:这个表主要用来mangle数据包。我们可以改变不同的包及包 头的内容，比如 TTL，TOS或MARK。 注意MARK并没有真正地改动数据包，它只是在内核空间为包设了一个标记。防火墙 内的其他的规则或程序（如tc）可以使用这种标记对包进行过滤或高级路由。这个表有五个内建的链： PREROUTING，POSTROUTING， OUTPUT，INPUT和 </p>
+<h3 id="表名-FORWARD"><a href="#表名-FORWARD" class="headerlink" title="表名:FORWARD"></a>表名:FORWARD</h3><p>注释:PREROUTING在包进入防火墙之后、路由判断之前改变 包，POSTROUTING是在所有路由判断之后。<br>OUTPUT在确定包的目的之前更改数据包。INPUT在包被路由到本地 之后，但在用户空间的程序看到它之前改变包。FORWARD在最初的路由判 断之后、最后一次更改包的目的之前mangle包。注意，mangle表不能做任何NAT，它只是改变数据包的 TTL，TOS或MARK，而不是其源目地 址。NAT是在nat表中操作的。</p>
+<h3 id="表名-filter"><a href="#表名-filter" class="headerlink" title="表名:filter"></a>表名:filter</h3><p>注释:filter表是专门过滤包 的，内建三个链，可以毫无问题地对包进行DROP、LOG、ACCEPT和REJECT等操作。FORWARD 链过滤所有不是本地产生的并且目的地不是本地（所谓本地就是防火墙了）的包，而 INPUT恰恰针对那些目的地是本地的包。OUTPUT 是用来过滤所有本地生成的包的。<br>上面介绍了三个不同的表的最基本的内容。你应该知道它们的使用目的完全不同</p>
+<p>–sport –dport<br>使用服务名或端口号，但名字必须是在/etc/services 中定义的，因为iptables从这个文件里查找相应的端口号。(建议使用端口)</p>
+<h3 id="用一条规则写多个端口"><a href="#用一条规则写多个端口" class="headerlink" title="用一条规则写多个端口"></a>用一条规则写多个端口</h3><pre><code>-A INPUT -p udp -m multiport --dports 53,80,443 -j ACCEPT </code></pre><h3 id="用一条规则写IP范围"><a href="#用一条规则写IP范围" class="headerlink" title="用一条规则写IP范围"></a>用一条规则写IP范围</h3><pre><code>-A INPUT  -m iprange --src-range  126.244.57.130-126.244.57.140  -j ACCEPT</code></pre>
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/iptables/">iptables</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">走上人生的路途吧。前途很远，也很暗。然而不要怕，不怕的人面前才有路。--鲁迅</h3>
+        <div class="buttons is-centered">
+            
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/08/21/centos7配置安装iptables/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">centos7配置安装iptables</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/08/20/google-Authenticator加强ssh/">
+                <span class="level-item">google Authenticator加强ssh</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+    
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="wangzhirui">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        wangzhirui
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        哀其不幸，怒其不争
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>中国大陆</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            75
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章分类
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            3
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章标签
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            11
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zhiruiwang128" target="_blank" rel="noopener">
+                关注我</a>
+        </div>
+        
+        
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/apple/" style="font-size: 10px;">apple</a> <a href="/tags/centos/" style="font-size: 12px;">centos</a> <a href="/tags/docker/" style="font-size: 16px;">docker</a> <a href="/tags/iptables/" style="font-size: 12px;">iptables</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/mysql/" style="font-size: 14px;">mysql</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/oracle/" style="font-size: 18px;">oracle</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/zabbix/" style="font-size: 16px;">zabbix</a> <a href="/tags/越狱/" style="font-size: 10px;">越狱</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Ra1nUSBv2.0-Intel启动异常解决办法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T02:39:47.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Ra1nUSBv2.0-Intel启动异常解决办法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/吹水/">吹水</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Centos6的TCP Retransmission问题">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-25T09:09:16.000Z">2019-12-25</time></div>
+                    <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Centos6的TCP Retransmission问题</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="tomcat6连接人大金仓 报No suitable driver">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-06T09:30:03.000Z">2019-12-06</time></div>
+                    <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="title has-link-black-ter is-size-6 has-text-weight-normal">tomcat6连接人大金仓 报No suitable driver</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/27/su使用时环境变量注意事项/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="su使用时环境变量注意事项">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-27T03:09:57.000Z">2019-11-27</time></div>
+                    <a href="/2019/11/27/su使用时环境变量注意事项/" class="title has-link-black-ter is-size-6 has-text-weight-normal">su使用时环境变量注意事项</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="linux下limits.conf 修改不生效的原因">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-25T07:17:33.000Z">2019-11-25</time></div>
+                    <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="title has-link-black-ter is-size-6 has-text-weight-normal">linux下limits.conf 修改不生效的原因</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+
+                
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="iptables基础笔记" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 wangzhirui&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+            </div>
+        </div>
+<span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+            <script>
+                var now = new Date();
+                function createtime() {
+                    var grt= new Date("03/13/2017 12:00:00");//此处修改你的建站时间或者网站上线时间
+                    now.setTime(now.getTime()+250);
+                    days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+                    hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+                    if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (
+60 * hnum);
+                    mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+                    seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+                    snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+                    document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+                    document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+                }
+            setInterval("createtime()",250);
+            </script>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'http://wangzhirui.com',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+
+
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>zabbix监控JMX之Tomcat - R博客</title>
+
+
+    <meta name="description" content="1、我们需要这4个文件：下载链接：https://share.weiyun.com/5PobRgc">
+<meta name="keywords" content="zabbix">
+<meta property="og:type" content="article">
+<meta property="og:title" content="zabbix监控JMX之Tomcat">
+<meta property="og:url" content="http://wangzhirui.com/2019/09/05/zabbix监控JMX之Tomcat/index.html">
+<meta property="og:site_name" content="R博客">
+<meta property="og:description" content="1、我们需要这4个文件：下载链接：https://share.weiyun.com/5PobRgc">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://wangzhirui.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-02-18T03:52:03.507Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="zabbix监控JMX之Tomcat">
+<meta name="twitter:description" content="1、我们需要这4个文件：下载链接：https://share.weiyun.com/5PobRgc">
+<meta name="twitter:image" content="http://wangzhirui.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="zabbix监控JMX之Tomcat" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档文章</a>
+                
+                <a class="navbar-item"
+                href="/categories">文章分类</a>
+                
+                <a class="navbar-item"
+                href="/tags">文章标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+<a class="navbar-item search">
+<span id="busuanzi_container_site_pv">
+  |  本站总访问量<span id="busuanzi_value_site_pv"</span>次
+</span>
+<span id="busuanzi_container_site_uv">
+  |  本站访客数<span id="busuanzi_value_site_uv"></span>人次  |
+</span>
+</a>
+
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-09-05T03:44:09.000Z">2019-09-05</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    10 分钟 读完 (大约 1561 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                zabbix监控JMX之Tomcat
+            
+        </h1>
+        <div class="content">
+            <p>1、我们需要这4个文件：<br>下载链接：<a href="https://share.weiyun.com/5PobRgc">https://share.weiyun.com/5PobRgc</a></p>
+<a id="more"></a>
+
+<pre><code>cmdline-jmxclient-0.10.3.jar：用来读取jmx信息
+discovery_java_status.conf：客户端配置文件
+java.txt：填写tomcat的相关端口
+jmx_discovery.sh：自动发现的脚本</code></pre><p><img src="https://i.loli.net/2019/09/04/fTSd5miPH6OJDtx.png" alt="zabbixjvm-1.png"></p>
+</br>
+
+<p>2、zabbix客户端配置Incloude路径</p>
+<pre><code class="javascript"> vi /usr/local/zabbix/etc/zabbix_agentd.conf
+    234 ### Option: Include
+    235 #       You may include individual files or all files in a directory in the configuration file.
+    236 #       Installing Zabbix will create include directory in /usr/local/etc, unless modified during the compile time.
+    237 #
+    238 # Mandatory: no
+    239 # Default:
+    240 # Include=
+    241 
+    242 # Include=/usr/local/etc/zabbix_agentd.userparams.conf
+   243 Include=/usr/local/zabbix/etc/zabbix_agentd.conf.d/
+   244</code></pre>
+</br>
+
+<p>3、配置tomcat:</p>
+<h3 id="tomcat版本为7-0-85"><a href="#tomcat版本为7-0-85" class="headerlink" title="tomcat版本为7.0.85"></a>tomcat版本为7.0.85</h3><p>在相应的tomcat实例中 启动参数下，添加这个：</p>
+<pre><code class="javascript">export CATALINA_OPTS=&quot;$CATALINA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=10052 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Djava.rmi.server.hostname=127.0.0.1&quot;</code></pre>
+<p>10052是jmx远程监控的端口<br>配置完这个 记住重启下tomcat实例</p>
+</br>
+
+
+<p>4、将java.txt 、 jmx_discovery.sh放在这个目录下</p>
+<pre><code class="shell">[root@qhkjt-web scripts]# pwd
+/usr/local/zabbix/scripts
+[root@qhkjt-web scripts]# ll
+总用量 8
+-rwxr-xr-x 1 root root   42 8月  22 2018 java.txt
+-rwxr-xr-x 1 root root 1391 8月  23 2018 jmx_discovery.sh
+[root@qhkjt-web scripts]# </code></pre>
+</br>
+
+<p>5、java.txt内容如下：</p>
+<pre><code>qhkjt-web|10052|9090
+qhkjt-pdf|10053|9091</code></pre><ul>
+<li>第一列：自定义的名称</li>
+<li>第二列：jmx远程监控的端口</li>
+<li>第二列：tomcat实例端口</li>
+</ul>
+</br>
+
+<p>6、jmx_discovery.sh内容如下，其作用是为服务器传递json格式：</p>
+<pre><code class="javascript">#!/bin/bash
+#function:monitor tcp connect status from zabbix
+source /etc/bashrc &gt;/dev/null 2&gt;&amp;1
+source /etc/profile &gt;/dev/null 2&gt;&amp;1
+#定义发现函数，从java.txt读取文本
+jmx_port_discovery () {
+catalina_port=($(cat /usr/local/zabbix/scripts/java.txt|cut -d &quot;|&quot; -f3))
+jmx_port=($(cat /usr/local/zabbix/scripts/java.txt|cut -d &quot;|&quot; -f2))
+Tomcat_Name=($(cat /usr/local/zabbix/scripts/java.txt|cut -d &quot;|&quot; -f1))
+
+length=${#jmx_port[@]}
+
+printf &quot;{\n&quot;
+printf &#39;\t&#39;&quot;\&quot;data\&quot;:[&quot;
+for ((i=0;i&lt;$length;i++))
+do
+    printf &quot;\n\t\t{&quot;
+                printf &quot;\t\&quot;{#JMX_PORT}\&quot;:\&quot;${jmx_port[$i]}\&quot;,\n&quot;
+                printf &quot;\t\t\t\&quot;{#JAVA_NAME}\&quot;:\&quot;${Tomcat_Name[$i]}\&quot;,\n&quot;
+                printf &quot;\t\t\t\&quot;{#CATALINA_PORT}\&quot;:\&quot;${catalina_port[$i]}\&quot;}\n&quot;
+    if [ $i -lt $[$length-1] ];then
+        printf &quot;,&quot;
+    fi
+done
+printf &quot;\n\t]\n&quot;
+printf &quot;}\n&quot;
+
+}
+        case &quot;$1&quot; in
+        jmx_port_discovery)
+        jmx_port_discovery
+        ;;
+        jvmper)
+        #这个计算堆内存的百分比
+        userd=`/usr/bin/java -jar  /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar - 127.0.0.1:$2 java.lang:type=Memory HeapMemoryUsage  2&gt;&amp;1|grep used |cut -d &quot; &quot; -f2`
+        total=`/usr/bin/java -jar  /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar - 127.0.0.1:$2 java.lang:type=Memory HeapMemoryUsage  2&gt;&amp;1|grep max |cut -d &quot; &quot; -f2`
+        awk -v userd=&quot;$userd&quot; -v total=&quot;$total&quot; &#39;BEGIN{printf &quot;%0.2f\n&quot;,userd/total*100}&#39;
+        ;;
+        *)
+        echo &quot;Usage:$0 {jmx_port_discovery|jvmper}&quot;
+        ;;
+        esac</code></pre>
+</br>
+
+<p>7、将cmdline-jmxclient-0.10.3.jar放在这个路径，因为脚本中写了绝对路径</p>
+<pre><code class="shell">[root@qhkjt-web lib]# pwd
+/usr/local/zabbix/lib
+[root@qhkjt-web lib]# ll
+总用量 24
+-rw-r--r-- 1 root root   140 8月  21 2018 1
+-rw-r--r-- 1 root root 20124 8月  21 2018 cmdline-jmxclient-0.10.3.jar
+[root@qhkjt-web lib]# </code></pre>
+</br>
+
+
+<p>8、将discovery_java_status.conf放在这个目录下</p>
+<pre><code class="javascript">[root@qhkjt-web zabbix_agentd.conf.d]# pwd
+/usr/local/zabbix/etc/zabbix_agentd.conf.d
+[root@qhkjt-web zabbix_agentd.conf.d]# ll
+总用量 4
+-rw-r--r-- 1 root root 2491 8月  23 2018 discovery_java_status.conf
+[root@qhkjt-web zabbix_agentd.conf.d]# </code></pre>
+</br>
+
+<p>9、discovery_java_status.conf内容如下：</p>
+<pre><code class="javascript">格式：UserParameter=键值，脚本
+#发现项目类别
+UserParameter=java.jmx.discovery,/usr/local/zabbix/scripts/jmx_discovery.sh jmx_port_discovery
+#当前线程数
+UserParameter=java.ThreadCounts[*],/usr/bin/java -jar  /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar - 127.0.0.1:$1 java.lang:type=Threading  ThreadCount  2&gt;&amp;1|cut -d &quot; &quot; -f6
+#线程数峰值
+UserParameter=java.PeakThreadCount[*],/usr/bin/java -jar  /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar - 127.0.0.1:$1 java.lang:type=Threading PeakThreadCount  2&gt;&amp;1|cut -d &quot; &quot; -f6
+#总纯程数
+UserParameter=java.TotalStartedThreadCount[*],/usr/bin/java  -jar /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar  - 127.0.0.1:$1 java.lang:type=Threading TotalStartedThreadCount  2&gt;&amp;1| cut -d &quot; &quot; -f6
+#实例当前线程数
+UserParameter=java.Catalina.currentThreadCount[*],/usr/bin/java  -jar /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar  - 127.0.0.1:$1  Catalina:name=\&quot;http-apr-$2\&quot;,type=ThreadPool currentThreadCount  2&gt;&amp;1| cut -d &quot; &quot; -f6
+#实例当前连接数
+UserParameter=java.Catalina.connectionCount[*],/usr/bin/java  -jar /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar  - 127.0.0.1:$1  Catalina:name=\&quot;http-apr-$2\&quot;,type=ThreadPool connectionCount  2&gt;&amp;1| cut -d &quot; &quot; -f6
+#实例最大线程数
+UserParameter=java.Catalina.maxThreads[*],/usr/bin/java  -jar /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar  - 127.0.0.1:$1  Catalina:name=\&quot;http-apr-$2\&quot;,type=ThreadPool maxThreads  2&gt;&amp;1| cut -d &quot; &quot; -f6
+#当前繁忙线程数
+UserParameter=java.Catalina.currentThreadsBusy[*],/usr/bin/java  -jar /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar  - 127.0.0.1:$1  Catalina:name=\&quot;http-apr-$2\&quot;,type=ThreadPool currentThreadsBusy  2&gt;&amp;1| cut -d &quot; &quot; -f6
+#堆内存使用量
+UserParameter=java.HeapMemoryUsage.used[*],/usr/bin/java -jar  /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar - 127.0.0.1:$1 java.lang:type=Memory HeapMemoryUsage  2&gt;&amp;1|grep used |cut -d &quot; &quot; -f2
+#堆内存最大
+UserParameter=java.HeapMemoryUsage.max[*],/usr/bin/java -jar  /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar - 127.0.0.1:$1 java.lang:type=Memory HeapMemoryUsage  2&gt;&amp;1|grep max |cut -d &quot; &quot; -f2
+#堆内存百分比
+UserParameter=java.HeapMemoryUsage.per[*],/usr/local/zabbix/scripts/jmx_discovery.sh  $1 $2
+#当前会话数
+UserParameter=java.Catalina.activeSessions[*],/usr/bin/java  -jar /usr/local/zabbix/lib/cmdline-jmxclient-0.10.3.jar  - 127.0.0.1:$1  Catalina:type=Manager,context=/egrantweb,host=localhost activeSessions 2&gt;&amp;1| cut -d &quot; &quot; -f6</code></pre>
+</br>
+
+<p>10、配置完discovery_java_status.conf 记得重启下客户端</p>
+<pre><code class="javasript">pkill -9 zabbix
+/usr/local/zabbix/sbin/zabbix_agentd</code></pre>
+</br>
+
+<p>11、测试客户端：</p>
+<pre><code class="java">[root@qhkjt-web bin]# /usr/local/zabbix/bin/zabbix_get -s 127.0.0.1 -p 10050 -k java.jmx.discovery
+{
+        &quot;data&quot;:[
+                {       &quot;{#JMX_PORT}&quot;:&quot;10052&quot;,
+                        &quot;{#JAVA_NAME}&quot;:&quot;qhkjt-web&quot;,
+                        &quot;{#CATALINA_PORT}&quot;:&quot;9090&quot;}
+,
+                {       &quot;{#JMX_PORT}&quot;:&quot;10053&quot;,
+                        &quot;{#JAVA_NAME}&quot;:&quot;qhkjt-pdf&quot;,
+                        &quot;{#CATALINA_PORT}&quot;:&quot;9091&quot;}
+
+        ]
+}
+[root@qhkjt-web bin]# </code></pre>
+<p>测试成功<br></br></p>
+<h1 id="二、服务端："><a href="#二、服务端：" class="headerlink" title="二、服务端："></a>二、服务端：</h1><p>1、创建模板<br><img src="https://i.loli.net/2019/09/04/ohOSBAVeaf8HbUc.png" alt="zabbixjvm-2.png"></p>
+</br>
+
+<p>2、配置自动发现规则<br><img src="https://i.loli.net/2019/09/04/kcRhSo8s7BlnyCw.png" alt="zabbixjvm-3.png"></p>
+<p>类型：主动式<br>键值：java.jmx.discovery<br><img src="https://i.loli.net/2019/09/04/GXyuizveaZoPU2C.png" alt="zabbixjvm-4.png"></p>
+</br>
+
+<p>3、由于是自动发现　所以要在“监控项原型”去创建监控项<br><img src="https://i.loli.net/2019/09/04/UhTtd37P5wupSNX.png" alt="zabbixjvm-5.png"></p>
+<p><img src="https://i.loli.net/2019/09/04/C9vNLbfq2UZtJ4D.png" alt="zabbixjvm-6.png"></p>
+<p>名称：自定义<br>类型：主动式（注意）</p>
+
+键值：java.ThreadCounts[{#JMX_PORT}]
+
+<p>应用集：JMX(自定义，便于查看)<br><img src="https://i.loli.net/2019/09/04/Dhy7kjOzUwatRAm.png" alt="zabbixjvm-7.png"><br></br></p>
+<p>4、在监控主机添加这个模板<br><img src="https://i.loli.net/2019/09/04/czK69fuX1WnIhjR.png" alt="zabbixjvm-8.png"><br></br></p>
+<p>5、查看有没有数据过来<br><img src="https://i.loli.net/2019/09/04/u2TxyXGdDOI8ESq.png" alt="zabbixjvm-9.png"><br></br></p>
+<p>己有数据过来</p>
+<p>6、继续添加其他的“监控原型”<br><img src="https://i.loli.net/2019/09/04/a91C2wWELOJoDq6.png" alt="zabbixjvm-10.png"><br></br></p>
+<p>7、查看监控的数据：<br><img src="https://i.loli.net/2019/09/04/UCQRoE5tTOzYA9e.png" alt="zabbixjvm-11.png"><br></br></p>
+<h1 id="三、配置触发器"><a href="#三、配置触发器" class="headerlink" title="三、配置触发器"></a>三、配置触发器</h1><p>1、创建触发器 注意：要在“自动发现规则”下的“触发器类型”下去创建<br><img src="https://i.loli.net/2019/09/04/maiB9yxchPeFRlA.png" alt="zabbixjvm-12.png"></p>
+<p>2、创建触发器原型<br><img src="https://i.loli.net/2019/09/04/zpOCu2AmhrMEaQR.png" alt="zabbixjvm-13.png"><br></br></p>
+<p>3、创建一个堆内丰百分比大于75%时就触发报警的触发器<br><img src="https://i.loli.net/2019/09/04/1MI3doVF6wJsQac.png" alt="zabbixjvm-14.png"><br></br></p>
+<p>4、“选择原型”<br><img src="https://i.loli.net/2019/09/04/8YnaNRhePC3VTbX.png" alt="zabbixjvm-15.png"><br></br></p>
+<p>5、选中对应的监控原型<br><img src="https://i.loli.net/2019/09/04/TQmsbt3oZrBK1hC.png" alt="zabbixjvm-16.png"><br></br></p>
+<p>6、使用avg()函数<br>统计5分钟内的平均值，如果平均值大于75 就触发报警<br><img src="https://i.loli.net/2019/09/04/oPy2wGsWZBYRtUL.png" alt="zabbixjvm-17.png"><br></br></p>
+<p><img src="https://i.loli.net/2019/09/04/IkpyDEhwPUVnJ4B.png" alt="zabbixjvm-18.png"><br></br></p>
+<p>7、定义为：严重<br><img src="https://i.loli.net/2019/09/04/gl48uHjiJoFVrS3.png" alt="zabbixjvm-19.png"></p>
+<p>配置成功。</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/zabbix/">zabbix</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">走上人生的路途吧。前途很远，也很暗。然而不要怕，不怕的人面前才有路。--鲁迅</h3>
+        <div class="buttons is-centered">
+            
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/09/06/zabbix自动发现排除tmp与boot分区/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">zabbix自动发现排除tmp与boot分区</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/09/04/zabbix3-0源码安装/">
+                <span class="level-item">zabbix3.0源码安装</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+    
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="wangzhirui">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        wangzhirui
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        哀其不幸，怒其不争
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>中国大陆</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            75
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章分类
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            3
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章标签
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            11
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zhiruiwang128" target="_blank" rel="noopener">
+                关注我</a>
+        </div>
+        
+        
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/apple/" style="font-size: 10px;">apple</a> <a href="/tags/centos/" style="font-size: 12px;">centos</a> <a href="/tags/docker/" style="font-size: 16px;">docker</a> <a href="/tags/iptables/" style="font-size: 12px;">iptables</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/mysql/" style="font-size: 14px;">mysql</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/oracle/" style="font-size: 18px;">oracle</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/zabbix/" style="font-size: 16px;">zabbix</a> <a href="/tags/越狱/" style="font-size: 10px;">越狱</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Ra1nUSBv2.0-Intel启动异常解决办法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T02:39:47.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Ra1nUSBv2.0-Intel启动异常解决办法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/吹水/">吹水</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Centos6的TCP Retransmission问题">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-25T09:09:16.000Z">2019-12-25</time></div>
+                    <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Centos6的TCP Retransmission问题</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="tomcat6连接人大金仓 报No suitable driver">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-06T09:30:03.000Z">2019-12-06</time></div>
+                    <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="title has-link-black-ter is-size-6 has-text-weight-normal">tomcat6连接人大金仓 报No suitable driver</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/27/su使用时环境变量注意事项/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="su使用时环境变量注意事项">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-27T03:09:57.000Z">2019-11-27</time></div>
+                    <a href="/2019/11/27/su使用时环境变量注意事项/" class="title has-link-black-ter is-size-6 has-text-weight-normal">su使用时环境变量注意事项</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="linux下limits.conf 修改不生效的原因">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-25T07:17:33.000Z">2019-11-25</time></div>
+                    <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="title has-link-black-ter is-size-6 has-text-weight-normal">linux下limits.conf 修改不生效的原因</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+
+                
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="zabbix监控JMX之Tomcat" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 wangzhirui&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+            </div>
+        </div>
+<span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+            <script>
+                var now = new Date();
+                function createtime() {
+                    var grt= new Date("03/13/2017 12:00:00");//此处修改你的建站时间或者网站上线时间
+                    now.setTime(now.getTime()+250);
+                    days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+                    hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+                    if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (
+60 * hnum);
+                    mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+                    seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+                    snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+                    document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+                    document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+                }
+            setInterval("createtime()",250);
+            </script>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'http://wangzhirui.com',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+
+
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

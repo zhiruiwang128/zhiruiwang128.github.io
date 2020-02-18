@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>Centos7 docker基础2-容器 - R博客</title>
+
+
+    <meta name="description" content="一、创建容器">
+<meta name="keywords" content="docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Centos7 docker基础2-容器">
+<meta property="og:url" content="http://wangzhirui.com/2019/08/22/Centos7-docker基础2-容器/index.html">
+<meta property="og:site_name" content="R博客">
+<meta property="og:description" content="一、创建容器">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://wangzhirui.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-02-18T03:52:03.504Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Centos7 docker基础2-容器">
+<meta name="twitter:description" content="一、创建容器">
+<meta name="twitter:image" content="http://wangzhirui.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="Centos7 docker基础2-容器" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档文章</a>
+                
+                <a class="navbar-item"
+                href="/categories">文章分类</a>
+                
+                <a class="navbar-item"
+                href="/tags">文章标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+<a class="navbar-item search">
+<span id="busuanzi_container_site_pv">
+  |  本站总访问量<span id="busuanzi_value_site_pv"</span>次
+</span>
+<span id="busuanzi_container_site_uv">
+  |  本站访客数<span id="busuanzi_value_site_uv"></span>人次  |
+</span>
+</a>
+
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-08-22T06:32:45.000Z">2019-08-22</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    15 分钟 读完 (大约 2233 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Centos7 docker基础2-容器
+            
+        </h1>
+        <div class="content">
+            <h1 id="一、创建容器"><a href="#一、创建容器" class="headerlink" title="一、创建容器"></a>一、创建容器</h1><a id="more"></a>
+<blockquote>
+<p>docker create -it centos</p>
+</blockquote>
+<p>#-i  即使未连接，也保持stdin打开     </p>
+<p>#-t 分配给伪tty      </p>
+<p>#create 只创建 不包含自动启动容器      </p>
+<p>#本地没有centos的镜像,将自动下载      </p>
+<pre><code class="javascript">[root@centos7 ~]# docker create -it centos       
+Unable to find image &#39;centos:latest&#39; locally
+Trying to pull repository docker.io/library/centos ... 
+latest: Pulling from docker.io/library/centos
+8ba884070f61: Pull complete 
+Digest: sha256:a799dd8a2ded4a83484bbae769d97655392b3f86533ceb7dd96bbac929809f3c
+Status: Downloaded newer image for docker.io/centos:latest
+a33622e3f977f846aac151b0e0250d42d37f6f7276c76208c16fe8faf9578a40
+[root@centos7 ~]# docker images
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+ubuntu                    14.04               40446eeefc1a        About an hour ago   215 MB
+docker.io/rdocker8/test   latest              8e861c8118a3        2 hours ago         64.2 MB
+docker.io/ubuntu          latest              4c108a37151f        4 weeks ago         64.2 MB
+docker.io/centos          latest              9f38484d220f        4 months ago        202 MB #下载了我好久
+[root@centos7 ~]# 
+
+
+Create a new container
+[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                   PORTS               NAMES
+a33622e3f977        centos              &quot;/bin/bash&quot;         22 minutes ago      Created                                      unruffled_keller
+0b2d5edef671        ubuntu:latest       &quot;/bin/bash&quot;         2 hours ago         Exited (0) 2 hours ago                       optimistic_nightingale
+[root@centos7 ~]# </code></pre>
+<p>容器内操作<br>输出一个“hello world”</p>
+<pre><code class="javascript">docker run centos /bin/echo &quot;hello world&quot; 
+[root@centos7 ~]# docker run centos /bin/echo &quot;hello world&quot; 
+hello world       #运行完就直接exit了
+[root@centos7 ~]# </code></pre>
+<p><img src="https://i.loli.net/2019/08/22/iQ3g4PAJC1vepo7.png" alt="保定开源人"></p>
+<p>进入交互tty</p>
+<pre><code class="javascript">docker run -t -i centos:latest /bin/bash
+[root@centos7 ~]# docker run -t -i centos:latest /bin/bash
+[root@23b2ea559a54 /]# ps -ef
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 08:48 ?        00:00:00 /bin/bash
+root        14     1  0 08:48 ?        00:00:00 ps -ef
+[root@23b2ea559a54 /]# ll  -h /  
+total 12K
+-rw-r--r--   1 root root 12K Mar  5 17:36 anaconda-post.log
+lrwxrwxrwx   1 root root   7 Mar  5 17:34 bin -&gt; usr/bin
+drwxr-xr-x   5 root root 360 Jul 19 08:48 dev
+drwxr-xr-x   1 root root  66 Jul 19 08:48 etc
+drwxr-xr-x   2 root root   6 Apr 11  2018 home
+lrwxrwxrwx   1 root root   7 Mar  5 17:34 lib -&gt; usr/lib
+lrwxrwxrwx   1 root root   9 Mar  5 17:34 lib64 -&gt; usr/lib64
+drwxr-xr-x   2 root root   6 Apr 11  2018 media
+drwxr-xr-x   2 root root   6 Apr 11  2018 mnt
+drwxr-xr-x   2 root root   6 Apr 11  2018 opt
+dr-xr-xr-x 110 root root   0 Jul 19 08:48 proc
+dr-xr-x---   2 root root 114 Mar  5 17:36 root
+drwxr-xr-x   1 root root  21 Jul 19 08:48 run
+lrwxrwxrwx   1 root root   8 Mar  5 17:34 sbin -&gt; usr/sbin
+drwxr-xr-x   2 root root   6 Apr 11  2018 srv
+dr-xr-xr-x  13 root root   0 Jul 19 08:40 sys
+drwxrwxrwt   7 root root 132 Mar  5 17:36 tmp
+drwxr-xr-x  13 root root 155 Mar  5 17:34 usr
+drwxr-xr-x  18 root root 238 Mar  5 17:34 var
+[root@23b2ea559a54 /]# </code></pre>
+<blockquote>
+<p>按ctrl+d 或 exit 可退出容器</p>
+</blockquote>
+<h2 id="守护态运行"><a href="#守护态运行" class="headerlink" title="守护态运行"></a>守护态运行</h2><p>-d:后台运行容器，并返回容器ID<br>-h “mars”: 指定容器的hostname；</p>
+<pre><code class="javascript">[root@centos7 ~]# docker run -d -h docker001 centos:latest /bin/bash -c &quot;while true;do echo hello world;sleep 1;done&quot; 
+[root@centos7 ~]# docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+bd14a6ab787b        centos:latest       &quot;/bin/bash -c &#39;whi...&quot;   22 seconds ago      Up 21 seconds                           nervous_nightingale</code></pre>
+<p>查看日志：</p>
+<blockquote>
+<p>docker logs bd14a6ab787b<br>docker logs -f bd14a6ab787b #加 -f 可以动态监听 </p>
+<pre><code class="javascript">[root@centos7 ~]# docker logs bd14a6ab787b #容器ID
+hello world
+hello world
+hello world
+hello world
+hello world
+hello world
+hello world
+hello world
+hello world
+hello world
+hello world
+[root@centos7 ~]#</code></pre>
+</blockquote>
+<p>终止守护态的容器</p>
+<blockquote>
+<p>docker stop  容器ID</p>
+</blockquote>
+<pre><code class="javascript">[root@centos7 ~]# docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+bd14a6ab787b        centos:latest       &quot;/bin/bash -c &#39;whi...&quot;   23 minutes ago      Up 23 minutes                           nervous_nightingale
+23b2ea559a54        centos:latest       &quot;/bin/bash&quot;              3 hours ago         Up 3 hours                              hardcore_davinci
+[root@centos7 ~]# docker stop bd14a6ab787b #关闭容器
+bd14a6ab787b
+[root@centos7 ~]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+23b2ea559a54        centos:latest       &quot;/bin/bash&quot;         3 hours ago         Up 3 hours                              hardcore_davinci
+[root@centos7 ~]# </code></pre>
+<blockquote>
+<p>docker ps -a -q</p>
+<blockquote>
+<p>-a:显示所有容器<br>-q:只显示容器的ID</p>
+</blockquote>
+</blockquote>
+<pre><code class="javascript">[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                       PORTS               NAMES
+bd14a6ab787b        centos:latest       &quot;/bin/bash -c &#39;whi...&quot;   28 minutes ago      Exited (137) 3 minutes ago                       nervous_nightingale
+23b2ea559a54        centos:latest       &quot;/bin/bash&quot;              3 hours ago         Up 3 hours                                       hardcore_davinci
+f75113ef9dfa        centos              &quot;/bin/bash&quot;              3 hours ago         Exited (0) 3 hours ago                           thirsty_goodall
+b118b57a47db        centos              &quot;/bin/echo &#39;hello ...&quot;   4 hours ago         Exited (0) 4 hours ago                           sleepy_hodgkin
+a33622e3f977        centos              &quot;/bin/bash&quot;              4 hours ago         Created                                          unruffled_keller
+0b2d5edef671        ubuntu:latest       &quot;/bin/bash&quot;              6 hours ago         Exited (0) 6 hours ago                           optimistic_nightingale
+[root@centos7 ~]# docker ps -a -q
+bd14a6ab787b
+23b2ea559a54
+f75113ef9dfa
+b118b57a47db
+a33622e3f977
+0b2d5edef671
+[root@centos7 ~]# </code></pre>
+<p>使用docker start 容器ID    可以启动容器<br>使用docker restart 容器ID 可以重启容器</p>
+<h1 id="二、进入容器："><a href="#二、进入容器：" class="headerlink" title="二、进入容器："></a>二、进入容器：</h1><p>有三种命令可以进容器：</p>
+<ul>
+<li>docker attach</li>
+<li>docker exec<br>及nsenter工具 这个要另外装<br>我先学习exec吧</li>
+</ul>
+<pre><code class="javascript">[root@centos7 /]# docker ps 
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+23b2ea559a54        centos:latest       &quot;/bin/bash&quot;         5 hours ago         Up 5 hours                              hardcore_davinci
+[root@centos7 /]# docker exec -ti 23b2ea559a54 /bin/bash
+[root@23b2ea559a54 /]# cd /
+[root@23b2ea559a54 /]# ll</code></pre>
+<h1 id="三、删除容器"><a href="#三、删除容器" class="headerlink" title="三、删除容器"></a>三、删除容器</h1><p>使用docker rm 容器ID</p>
+<pre><code class="javascript">[root@centos7 /]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                           PORTS               NAMES
+bd14a6ab787b        centos:latest       &quot;/bin/bash -c &#39;whi...&quot;   About an hour ago   Exited (137) About an hour ago                       nervous_nightingale
+23b2ea559a54        centos:latest       &quot;/bin/bash&quot;              5 hours ago         Up 5 hours                                           hardcore_davinci
+f75113ef9dfa        centos              &quot;/bin/bash&quot;              5 hours ago         Exited (0) 5 hours ago                               thirsty_goodall
+b118b57a47db        centos              &quot;/bin/echo &#39;hello ...&quot;   5 hours ago         Exited (0) 5 hours ago                               sleepy_hodgkin
+a33622e3f977        centos              &quot;/bin/bash&quot;              5 hours ago         Created                                              unruffled_keller
+0b2d5edef671        ubuntu:latest       &quot;/bin/bash&quot;              7 hours ago         Exited (0) 7 hours ago                               optimistic_nightingale
+[root@centos7 /]# docker rm 0b2d5edef671   #容器没有运行时，可以直接运行这个命令
+0b2d5edef671
+[root@centos7 /]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                           PORTS               NAMES
+bd14a6ab787b        centos:latest       &quot;/bin/bash -c &#39;whi...&quot;   About an hour ago   Exited (137) About an hour ago                       nervous_nightingale
+23b2ea559a54        centos:latest       &quot;/bin/bash&quot;              5 hours ago         Up 5 hours                                           hardcore_davinci
+f75113ef9dfa        centos              &quot;/bin/bash&quot;              5 hours ago         Exited (0) 5 hours ago                               thirsty_goodall
+b118b57a47db        centos              &quot;/bin/echo &#39;hello ...&quot;   5 hours ago         Exited (0) 5 hours ago                               sleepy_hodgkin
+a33622e3f977        centos              &quot;/bin/bash&quot;              5 hours ago         Created                                              unruffled_keller
+[root@centos7 /]# </code></pre>
+<p>如果正在运行 可以先执行stop操作，再执行rm操作；<br>强制删除正在运行的容器 要加-f (强制参数)</p>
+<pre><code class="javascript">[root@centos7 /]# docker ps 
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+23b2ea559a54        centos:latest       &quot;/bin/bash&quot;         5 hours ago         Up 5 hours                              hardcore_davinci
+[root@centos7 /]# docker rm 23b2ea559a54
+Error response from daemon: You cannot remove a running container 23b2ea559a540e744787c0c7d5eaf41dba763de678e5fb52d810a4ff7e221027. 
+Stop the container before attempting removal or use -f #提示你使用－f
+[root@centos7 /]# docker rm -f 23b2ea559a54
+23b2ea559a54
+[root@centos7 /]# </code></pre>
+<h1 id="四、导入和导出容器"><a href="#四、导入和导出容器" class="headerlink" title="四、导入和导出容器"></a>四、导入和导出容器</h1><p>不管是否运行，都可以使用docker export 执行导出容器</p>
+<pre><code class="javascript">[root@centos7 /]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                           PORTS               NAMES
+bd14a6ab787b        centos:latest       &quot;/bin/bash -c &#39;whi...&quot;   2 hours ago         Exited (137) About an hour ago                       nervous_nightingale
+f75113ef9dfa        centos              &quot;/bin/bash&quot;              5 hours ago         Exited (0) 5 hours ago                               thirsty_goodall
+b118b57a47db        centos              &quot;/bin/echo &#39;hello ...&quot;   5 hours ago         Exited (0) 5 hours ago                               sleepy_hodgkin
+a33622e3f977        centos              &quot;/bin/bash&quot;              6 hours ago         Created                                              unruffled_keller
+[root@centos7 /]# docker export bd14a6ab787b &gt; centos_for_stop.tar
+[root@centos7 /]# ll -h centos_for_stop.tar 
+-rw-r--r-- 1 root root 201M 7月  19 22:08 centos_for_stop.tar
+[root@centos7 /]# </code></pre>
+<p>导入使用 dock import 导入文件 成 镜像？？？</p>
+<pre><code class="javascript">[root@centos7 /]# cat centos_for_stop.tar | docker import - centos1:v1.0
+sha256:f1420ae8ab97a6f6f0615a2c20a90e2ced90ef76b03076b7117fed71dbbda4d1
+[root@centos7 /]# docker ps -a #在容器没有看到导入的
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                           PORTS               NAMES
+bd14a6ab787b        centos:latest       &quot;/bin/bash -c &#39;whi...&quot;   2 hours ago         Exited (137) About an hour ago                       nervous_nightingale
+f75113ef9dfa        centos              &quot;/bin/bash&quot;              5 hours ago         Exited (0) 5 hours ago                               thirsty_goodall
+b118b57a47db        centos              &quot;/bin/echo &#39;hello ...&quot;   5 hours ago         Exited (0) 5 hours ago                               sleepy_hodgkin
+a33622e3f977        centos              &quot;/bin/bash&quot;              6 hours ago         Created                                              unruffled_keller
+[root@centos7 /]# docker images #在镜像中 找到导入的centos1
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+centos1                   v1.0                f1420ae8ab97        21 seconds ago      202 MB
+ubuntu                    14.04               40446eeefc1a        7 hours ago         215 MB
+docker.io/rdocker8/test   latest              8e861c8118a3        8 hours ago         64.2 MB
+docker.io/ubuntu          latest              4c108a37151f        4 weeks ago         64.2 MB
+docker.io/centos          latest              9f38484d220f        4 months ago        202 MB
+[root@centos7 /]# </code></pre>
+<p>看这句话 意思是不管从镜像还是容器导出 导入的都要成镜像<br><img src="http://img.soogif.com/Wc4NUXSZ1xXFnCWboeAiKQigiExrWfh0.gif" alt=""></p>
+<p><img src="https://i.loli.net/2019/08/22/WpMDa9Cz2mXwyYZ.png" alt=""><br><img src="https://i.loli.net/2019/08/22/4C5GoIpZl3HUTdB.png" alt=""></p>
+<p>#我以为清空所有容器，将有容器之前的镜像在导入，就会看到之前的容器 看来我想错了。</p>
+<pre><code class="javascript">[root@centos7 /]# docker images
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+centos1                   v1.0                f1420ae8ab97        5 minutes ago       202 MB
+ubuntu                    14.04               40446eeefc1a        7 hours ago         215 MB
+docker.io/rdocker8/test   latest              8e861c8118a3        8 hours ago         64.2 MB
+docker.io/ubuntu          latest              4c108a37151f        4 weeks ago         64.2 MB
+docker.io/centos          latest              9f38484d220f        4 months ago        202 MB
+[root@centos7 /]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                           PORTS               NAMES
+bd14a6ab787b        centos:latest       &quot;/bin/bash -c &#39;whi...&quot;   2 hours ago         Exited (137) About an hour ago                       nervous_nightingale
+f75113ef9dfa        centos              &quot;/bin/bash&quot;              5 hours ago         Exited (0) 5 hours ago                               thirsty_goodall
+b118b57a47db        centos              &quot;/bin/echo &#39;hello ...&quot;   5 hours ago         Exited (0) 5 hours ago                               sleepy_hodgkin
+a33622e3f977        centos              &quot;/bin/bash&quot;              6 hours ago         Created                                              unruffled_keller
+[root@centos7 /]# docker save -o testimport.tar docker.io/centos:latest
+[root@centos7 /]# ll -h testimport.tar 
+-rw------- 1 root root 200M 7月  19 22:22 testimport.tar
+[root@centos7 /]# docker rm bd14a6ab787b b118b57a47db a33622e3f977 f75113ef9dfa
+[root@centos7 /]# docker ps -a          
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+[root@centos7 /]# docker images
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+centos1                   v1.0                f1420ae8ab97        8 minutes ago       202 MB
+ubuntu                    14.04               40446eeefc1a        7 hours ago         215 MB
+docker.io/rdocker8/test   latest              8e861c8118a3        8 hours ago         64.2 MB
+docker.io/ubuntu          latest              4c108a37151f        4 weeks ago         64.2 MB
+docker.io/centos          latest              9f38484d220f        4 months ago        202 MB
+[root@centos7 /]# docker image rm 9f38484d220f
+Untagged: docker.io/centos:latest
+Untagged: docker.io/centos@sha256:a799dd8a2ded4a83484bbae769d97655392b3f86533ceb7dd96bbac929809f3c
+Deleted: sha256:9f38484d220fa527b1fb19747638497179500a1bed8bf0498eb788229229e6e1
+Deleted: sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854
+[root@centos7 /]# docker images
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+centos1                   v1.0                f1420ae8ab97        8 minutes ago       202 MB
+ubuntu                    14.04               40446eeefc1a        7 hours ago         215 MB
+docker.io/rdocker8/test   latest              8e861c8118a3        8 hours ago         64.2 MB
+docker.io/ubuntu          latest              4c108a37151f        4 weeks ago         64.2 MB
+[root@centos7 /]# docker load &lt; testimport.tar 
+d69483a6face: Loading layer [==================================================&gt;] 209.5 MB/209.5 MB
+Loaded image: docker.io/centos:latest
+[root@centos7 /]# docker images
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+centos1                   v1.0                f1420ae8ab97        9 minutes ago       202 MB
+ubuntu                    14.04               40446eeefc1a        7 hours ago         215 MB
+docker.io/rdocker8/test   latest              8e861c8118a3        8 hours ago         64.2 MB
+docker.io/ubuntu          latest              4c108a37151f        4 weeks ago         64.2 MB
+docker.io/centos          latest              9f38484d220f        4 months ago        202 MB
+[root@centos7 /]# docker ps -a    #我以为清空所有容器，将有容器之前的镜像在导入，就会看到之前的容器 看来我想错了。
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+[root@centos7 /]# </code></pre>
+<blockquote>
+<p>教程参考于：<a href="http://www.bdkyr.com/">http://www.bdkyr.com/</a></p>
+</blockquote>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/docker/">docker</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">走上人生的路途吧。前途很远，也很暗。然而不要怕，不怕的人面前才有路。--鲁迅</h3>
+        <div class="buttons is-centered">
+            
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/08/22/Centos7-docker基础3-仓库/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Centos7 docker基础3-仓库</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/08/22/Centos7-docker基础1-镜像/">
+                <span class="level-item">Centos7 docker基础1-镜像</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+    
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="wangzhirui">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        wangzhirui
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        哀其不幸，怒其不争
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>中国大陆</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            75
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章分类
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            3
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章标签
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            11
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zhiruiwang128" target="_blank" rel="noopener">
+                关注我</a>
+        </div>
+        
+        
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/apple/" style="font-size: 10px;">apple</a> <a href="/tags/centos/" style="font-size: 12px;">centos</a> <a href="/tags/docker/" style="font-size: 16px;">docker</a> <a href="/tags/iptables/" style="font-size: 12px;">iptables</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/mysql/" style="font-size: 14px;">mysql</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/oracle/" style="font-size: 18px;">oracle</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/zabbix/" style="font-size: 16px;">zabbix</a> <a href="/tags/越狱/" style="font-size: 10px;">越狱</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Ra1nUSBv2.0-Intel启动异常解决办法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T02:39:47.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Ra1nUSBv2.0-Intel启动异常解决办法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/吹水/">吹水</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Centos6的TCP Retransmission问题">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-25T09:09:16.000Z">2019-12-25</time></div>
+                    <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Centos6的TCP Retransmission问题</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="tomcat6连接人大金仓 报No suitable driver">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-06T09:30:03.000Z">2019-12-06</time></div>
+                    <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="title has-link-black-ter is-size-6 has-text-weight-normal">tomcat6连接人大金仓 报No suitable driver</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/27/su使用时环境变量注意事项/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="su使用时环境变量注意事项">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-27T03:09:57.000Z">2019-11-27</time></div>
+                    <a href="/2019/11/27/su使用时环境变量注意事项/" class="title has-link-black-ter is-size-6 has-text-weight-normal">su使用时环境变量注意事项</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="linux下limits.conf 修改不生效的原因">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-25T07:17:33.000Z">2019-11-25</time></div>
+                    <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="title has-link-black-ter is-size-6 has-text-weight-normal">linux下limits.conf 修改不生效的原因</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+
+                
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="Centos7 docker基础2-容器" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 wangzhirui&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+            </div>
+        </div>
+<span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+            <script>
+                var now = new Date();
+                function createtime() {
+                    var grt= new Date("03/13/2017 12:00:00");//此处修改你的建站时间或者网站上线时间
+                    now.setTime(now.getTime()+250);
+                    days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+                    hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+                    if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (
+60 * hnum);
+                    mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+                    seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+                    snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+                    document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+                    document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+                }
+            setInterval("createtime()",250);
+            </script>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'http://wangzhirui.com',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+
+
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

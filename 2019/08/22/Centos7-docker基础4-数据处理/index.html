@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>Centos7 docker基础4-数据处理 - R博客</title>
+
+
+    <meta name="description" content="容器中管理数据主要有两种方式：数据卷数据卷容器">
+<meta name="keywords" content="docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Centos7 docker基础4-数据处理">
+<meta property="og:url" content="http://wangzhirui.com/2019/08/22/Centos7-docker基础4-数据处理/index.html">
+<meta property="og:site_name" content="R博客">
+<meta property="og:description" content="容器中管理数据主要有两种方式：数据卷数据卷容器">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://wangzhirui.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-02-18T03:52:03.504Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Centos7 docker基础4-数据处理">
+<meta name="twitter:description" content="容器中管理数据主要有两种方式：数据卷数据卷容器">
+<meta name="twitter:image" content="http://wangzhirui.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="Centos7 docker基础4-数据处理" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档文章</a>
+                
+                <a class="navbar-item"
+                href="/categories">文章分类</a>
+                
+                <a class="navbar-item"
+                href="/tags">文章标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+<a class="navbar-item search">
+<span id="busuanzi_container_site_pv">
+  |  本站总访问量<span id="busuanzi_value_site_pv"</span>次
+</span>
+<span id="busuanzi_container_site_uv">
+  |  本站访客数<span id="busuanzi_value_site_uv"></span>人次  |
+</span>
+</a>
+
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-08-22T09:13:58.000Z">2019-08-22</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    22 分钟 读完 (大约 3233 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Centos7 docker基础4-数据处理
+            
+        </h1>
+        <div class="content">
+            <p>容器中管理数据主要有两种方式：<br>数据卷<br>数据卷容器</p>
+<a id="more"></a>
+
+<h1 id="一、数据卷"><a href="#一、数据卷" class="headerlink" title="一、数据卷"></a>一、数据卷</h1><p>在容器内创建一个数据卷：<br>在用docker run 命令的时候，使用-v 标记可以在容器内创建一个数据卷 支持多次使用－v参数<br>（可以想像成mount）</p>
+<p>下载个webapp镜像</p>
+<pre><code class="javascript">[root@centos7 ~]# docker pull docker.io/training/webapp
+Using default tag: latest
+Trying to pull repository docker.io/training/webapp ... 
+latest: Pulling from docker.io/training/webapp
+e190868d63f8: Pull complete 
+909cd34c6fd7: Pull complete 
+0b9bfabab7c1: Pull complete 
+a3ed95caeb02: Pull complete 
+10bbbc0fc0ff: Pull complete 
+fca59b508e9f: Pull complete 
+e7ae2541b15b: Pull complete 
+9dd97ef58ce9: Pull complete 
+a4c1b0cb7af7: Pull complete 
+Digest: sha256:06e9c1983bd6d5db5fba376ccd63bfa529e8d02f23d5079b8f74a616308fb11d
+Status: Downloaded newer image for docker.io/training/webapp:latest
+[root@centos7 ~]# </code></pre>
+<pre><code class="javascript">docker run -d -P --name web -v /webapp docker.io/training/webapp python app.py
+-P:是允许外部访问容器需要暴露的端口
+--name：
+ -v /webapp ：创建一个数据卷挂载到容器的/webapp目录</code></pre>
+<p> 运行结果：</p>
+<pre><code class="javascript">[root@centos7 ~]# docker run -d -P --name web -v /webapp docker.io/training/webapp python app.py
+9e557abaabd4d50ab1c551d74390d83f9303fa2f6bf5483ac1dfe78626f15930
+[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS              PORTS                     NAMES
+9e557abaabd4        docker.io/training/webapp   &quot;python app.py&quot;          6 seconds ago       Up 5 seconds        0.0.0.0:32768-&gt;5000/tcp   web
+[root@centos7 ~]# netstat -tuplan | grep 5000 #为什么5000没有呢？？？？
+[root@centos7 ~]# netstat -tuplan | grep 327
+tcp6       0      0 :::32769                :::*                    LISTEN      11464/docker-proxy- 
+[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS                     PORTS                     NAMES
+9e557abaabd4        docker.io/training/webapp   &quot;python app.py&quot;          4 hours ago         Up 6 minutes               0.0.0.0:32769-&gt;5000/tcp   web
+140c9a4ac310        registry                    &quot;/entrypoint.sh /e...&quot;   29 hours ago        Exited (2) 6 minutes ago                             awesome_booth
+[root@centos7 ~]# </code></pre>
+<p>那个docker ps -a 输入的5000端口到底是干什么用的？<br>答：5000是容器暴露的端口 32769是本地的映射端口</p>
+<p><img src="https://i.loli.net/2019/08/22/KH1BEDcegFO82yf.png" alt="docker-4-1.png"></p>
+<p>现在我们进入容器中的/webapp中，去生成一个普通文件，看他最终是存放在本机的哪个目录下</p>
+<pre><code class="javascript">[root@centos7 ~]# docker exec -it 9e557abaabd4 /bin/bash
+root@9e557abaabd4:/opt/webapp# pwd
+/opt/webapp
+root@9e557abaabd4:/opt/webapp# ll
+total 20
+drwxr-xr-x 2 root root  94 May 15  2015 ./
+drwxr-xr-x 1 root root  20 May 15  2015 ../
+-rw-r--r-- 1 root root  11 May 15  2015 .gitignore
+-rw-r--r-- 1 root root  19 May 15  2015 Procfile
+-rw-r--r-- 1 root root 347 May 15  2015 app.py
+-rw-r--r-- 1 root root  41 May 15  2015 requirements.txt
+-rw-r--r-- 1 root root 285 May 15  2015 tests.py
+root@9e557abaabd4:/# cd /webapp/
+root@9e557abaabd4:/webapp# ll
+total 0
+drwxr-xr-x 2 root root  6 Jul 20 16:22 ./
+drwxr-xr-x 1 root root 31 Jul 20 16:22 ../
+
+root@9e557abaabd4:/webapp# touch testwebapp.txt
+root@9e557abaabd4:/webapp# ll
+total 0
+drwxr-xr-x 2 root root 28 Jul 20 20:54 ./
+drwxr-xr-x 1 root root 31 Jul 20 16:22 ../
+-rw-r--r-- 1 root root  0 Jul 20 20:54 testwebapp.txt
+root@9e557abaabd4:/webapp# exit
+exit
+[root@centos7 ~]# find / -name testwebapp.txt
+/var/lib/docker/volumes/b38c83c6d45aeb1d14bebedb18ac6f697821066e3da02a5db2100fec74faab30/_data/testwebapp.txt 
+#生成在这个里。原来这就是docker的数据卷默认生成的位置
+[root@centos7 ~]# </code></pre>
+<p>挂载一个主机目录作为数据卷</p>
+<ul>
+<li>如果主机目录不存在，docker会自己创建</li>
+</ul>
+<pre><code class="javascript">[root@centos7 ~]# ll -d /data
+ls: 无法访问/data: 没有那个文件或目录</code></pre>
+<pre><code class="javascript">先清除之前的容器
+[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS                        PORTS               NAMES
+9e557abaabd4        docker.io/training/webapp   &quot;python app.py&quot;          4 hours ago         Exited (137) 13 seconds ago                       web
+140c9a4ac310        registry                    &quot;/entrypoint.sh /e...&quot;   30 hours ago        Exited (2) 29 minutes ago                         awesome_booth
+[root@centos7 ~]# docker rm 9e557abaabd4
+9e557abaabd4</code></pre>
+<pre><code class="javascript">docker run -d -P --name web -v /data/webapp:/webapp  docker.io/training/webapp  python app.py
+# －v  本机上目录：容器目录</code></pre>
+<p>运行结果：</p>
+<pre><code class="javascript">[root@centos7 ~]# docker run -d -P --name web -v /data/webapp:/webapp  docker.io/training/webapp  python app.py    
+411315eaabffd80316874401a1e14f6dbb1e28c2a479354752ec55d0e2587b11
+[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS                      PORTS                     NAMES
+411315eaabff        docker.io/training/webapp   &quot;python app.py&quot;          4 seconds ago       Up 4 seconds                0.0.0.0:32774-&gt;5000/tcp   web
+140c9a4ac310        registry                    &quot;/entrypoint.sh /e...&quot;   30 hours ago        Exited (2) 41 minutes ago                             awesome_booth
+#如果-name web己存在，再次创建同名的会报错
+[root@centos7 ~]# docker run -d -P --name web -v /data/webapp:/webapp  docker.io/training/webapp  python app.py
+/usr/bin/docker-current: Error response from daemon: Conflict. The container name &quot;/web&quot; is already in use by container 411315eaabffd80316874401a1e14f6dbb1e28c2a479354752ec55d0e2587b11. You have to remove (or rename) that container to be able to reuse that name..
+See &#39;/usr/bin/docker-current run --help&#39;.
+[root@centos7 ~]# 
+如果-name 不同，就可以创建
+[root@centos7 ~]# docker run -d -P --name web2 -v /data/webapp:/webapp  docker.io/training/webapp  python app.py
+368636480f93cb39a6529cbd8a763a31950753ecf0df5939ac2790b518b33991
+[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS                      PORTS                     NAMES
+368636480f93        docker.io/training/webapp   &quot;python app.py&quot;          6 seconds ago       Up 6 seconds                0.0.0.0:32775-&gt;5000/tcp   web2
+411315eaabff        docker.io/training/webapp   &quot;python app.py&quot;          4 minutes ago       Up 4 minutes                0.0.0.0:32774-&gt;5000/tcp   web
+140c9a4ac310        registry                    &quot;/entrypoint.sh /e...&quot;   30 hours ago        Exited (2) 45 minutes ago                             awesome_booth
+[root@centos7 ~]# </code></pre>
+<p>看下两个容器上如果生成文件是否 都可以看到</p>
+<pre><code class="javascript">[root@centos7 ~]# docker exec -ti 368636480f93 /bin/bash
+root@368636480f93:/opt/webapp# cd /webapp/
+root@368636480f93:/webapp# ll
+total 0
+drwxr-xr-x 2 root root  6 Jul 20 21:07 ./
+drwxr-xr-x 1 root root 31 Jul 20 21:18 ../
+root@368636480f93:/webapp# touch 368636480f93.txt
+root@368636480f93:/webapp# exit
+exit
+[root@centos7 ~]# docker exec -ti 411315eaabff  /bin/bash
+root@411315eaabff:/opt/webapp# cd /webapp/
+root@411315eaabff:/webapp# ll
+total 0
+drwxr-xr-x 2 root root 30 Jul 20 21:20 ./
+drwxr-xr-x 1 root root 31 Jul 20 21:14 ../
+-rw-r--r-- 1 root root  0 Jul 20 21:20 368636480f93.txt  #可以看到容器ID：368636480f93生成的文件
+root@411315eaabff:/webapp# touch 411315eaabff.txt
+root@411315eaabff:/webapp# ll
+total 0
+drwxr-xr-x 2 root root 54 Jul 20 21:21 ./
+drwxr-xr-x 1 root root 31 Jul 20 21:14 ../
+-rw-r--r-- 1 root root  0 Jul 20 21:20 368636480f93.txt
+-rw-r--r-- 1 root root  0 Jul 20 21:21 411315eaabff.txt
+root@411315eaabff:/webapp# exit
+exit</code></pre>
+<p>#在本地的目录上可以看到两个容器生成的文件</p>
+<pre><code class="javascript">[root@centos7 ~]# ll /data/webapp/   
+总用量 0
+-rw-r--r-- 1 root root 0 7月  21 05:20 368636480f93.txt
+-rw-r--r-- 1 root root 0 7月  21 05:21 411315eaabff.txt
+[root@centos7 ~]# </code></pre>
+<p>#Docker挂载数据卷的默认权限是读写（rw）<br>可以指定权限</p>
+<pre><code class="javascript">[root@centos7 ~]# docker run -d -P --name web2 -v /data/webapp:/webapp:ro  docker.io/training/webapp  python app.py</code></pre>
+<blockquote>
+<p>但不能指定rwx,听说可以用：–privileged=true  使container内的root拥有真正的root权限 没有尝试过，后面再来</p>
+</blockquote>
+<ul>
+<li>-v 也可以从主机直接挂载文件到容器中</li>
+</ul>
+<pre><code class="javascript">docker run -d -P --privileged=true --name web4 -v ~/.bash_history:/.bash_history  docker.io/training/webapp  python app.py
+#教程说如果文件的inode改变，会引起docker报错
+#所以还是挂载文件目录 最好</code></pre>
+<p>运行结果：</p>
+<pre><code class="javascript">[root@centos7 ~]# docker run -d -P --privileged=true --name web4 -v ~/.bash_history:/.bash_history  docker.io/training/webapp  python app.py
+d852b32ee28c8d35e1e71cdd95ad2c0d898c99f292d70405d096ac9cb24c024b
+[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS                   PORTS                     NAMES
+d852b32ee28c        docker.io/training/webapp   &quot;python app.py&quot;          4 seconds ago       Up 4 seconds             0.0.0.0:32777-&gt;5000/tcp   web4
+e8be34033a6b        docker.io/training/webapp   &quot;python app.py&quot;          43 minutes ago      Up 43 minutes            0.0.0.0:32776-&gt;5000/tcp   web3
+368636480f93        docker.io/training/webapp   &quot;python app.py&quot;          About an hour ago   Up About an hour         0.0.0.0:32775-&gt;5000/tcp   web2
+411315eaabff        docker.io/training/webapp   &quot;python app.py&quot;          About an hour ago   Up About an hour         0.0.0.0:32774-&gt;5000/tcp   web
+140c9a4ac310        registry                    &quot;/entrypoint.sh /e...&quot;   32 hours ago        Exited (2) 2 hours ago                             awesome_booth
+[root@centos7 ~]# tail ~/.bash_history   #本机的文件内容
+docker logs bd14a6ab787b
+ping docker001
+docker ps
+docker stop
+docker stop bd14a6ab787b
+docker ps
+docker ps -a
+docker ps -a -q
+ll /
+exit
+[root@centos7 ~]# docker exec -it d852b32ee28c /bin/bash #进入容器查看文件
+root@d852b32ee28c:/opt/webapp# cd ~
+root@d852b32ee28c:~# tail /.bash_history 
+docker logs bd14a6ab787b
+ping docker001
+docker ps
+docker stop
+docker stop bd14a6ab787b
+docker ps
+docker ps -a
+docker ps -a -q
+ll /
+exit
+root@d852b32ee28c:~# </code></pre>
+<h1 id="二、数据卷容器"><a href="#二、数据卷容器" class="headerlink" title="二、数据卷容器"></a>二、数据卷容器</h1><p>数据卷容器：其实就是一个普通的容器，专门用它提供数据卷供给其他窗口挂载使用<br>使用 –volumes-from 参数时 ， 不用“提供容器”自身保持运行状态的<br>可以多次使用–volumes-from </p>
+<p>操作前清理之前的容器，便于查看:</p>
+<pre><code class="javascript">[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+[root@centos7 ~]# docker images
+REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
+centos1                       v1.0                f1420ae8ab97        32 hours ago        202 MB
+ubuntu                        14.04               40446eeefc1a        40 hours ago        215 MB
+docker.io/rdocker8/test       latest              8e861c8118a3        41 hours ago        64.2 MB
+192.168.174.102:5000/ubuntu   latest              4c108a37151f        4 weeks ago         64.2 MB
+docker.io/ubuntu              latest              4c108a37151f        4 weeks ago         64.2 MB
+docker.io/centos              latest              9f38484d220f        4 months ago        202 MB
+docker.io/registry            latest              f32a97de94e1        4 months ago        25.8 MB
+docker.io/training/webapp     latest              6fae60ef3446        4 years ago         349 MB
+[root@centos7 ~]# docker ps -a #清理之前的容器
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES</code></pre>
+<p>#创建一个dbdata的容器 且带有/dbdata数据卷</p>
+<pre><code class="javascript">[root@centos7 ~]# docker run -it -v /dbdata --name dbdata docker.io/centos 
+[root@a20a8f71b587 /]# ll -d /dbdata/ 
+drwxr-xr-x 2 root root 6 Jul 20 23:15 /dbdata/
+[root@a20a8f71b587 /]# exit
+exit</code></pre>
+<p>#创建db1、db2两个容器，并从dbdata容器挂载数据卷</p>
+<p>#使用 –volumes-from</p>
+<pre><code class="javascript">[root@centos7 ~]# docker run -it --volumes-from dbdata --name db1 docker.io/centos             
+[root@75238caf083e /]# exit
+exit</code></pre>
+<pre><code class="javascript">[root@centos7 ~]# docker run -it --volumes-from dbdata --name db2 docker.io/centos
+[root@a0183698be06 /]# exit
+exit</code></pre>
+<p>查看容器：</p>
+<pre><code class="javascript">[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED              STATUS                      PORTS               NAMES
+a0183698be06        docker.io/centos    &quot;/bin/bash&quot;         16 seconds ago       Exited (0) 5 seconds ago                        db2
+75238caf083e        docker.io/centos    &quot;/bin/bash&quot;         32 seconds ago       Exited (0) 20 seconds ago                       db1
+a20a8f71b587        docker.io/centos    &quot;/bin/bash&quot;         About a minute ago   Exited (0) 58 seconds ago                       dbdata
+[root@centos7 ~]# </code></pre>
+<ul>
+<li>查看一个容器是挂载了哪些数据卷</li>
+</ul>
+<pre><code class="javascript">docker inspect 9557a29349ed  | grep Volumes -A 2
+            &quot;VolumesFrom&quot;: null,
+            &quot;CapAdd&quot;: null,
+            &quot;CapDrop&quot;: null,
+--
+            &quot;Volumes&quot;: {
+                &quot;/dbdata&quot;: {}   #看这个
+            },
+[root@centos7 ~]# </code></pre>
+<p>测试下三个容器中的/dbdata是否共享：<br>在dbdata中新建一个普通文件</p>
+<pre><code class="javascript">[root@centos7 ~]# docker exec -it a20a8f71b587 /bin/bash
+Error response from daemon: Container a20a8f71b5879212a67d00976621b15f6ae71804f1768301e78b336262391748 is not running 
+#刚才没有加后台参数 所以exit就退出，开启下
+#也说明了使用 --volumes-from 参数是不用“提供容器”自身保持运行状态的
+[root@centos7 ~]# docker start a20a8f71b587
+a20a8f71b587
+[root@centos7 ~]# docker exec -it a20a8f71b587 /bin/bash
+[root@a20a8f71b587 /]# touch /dbdata/name_dbdata.txt
+[root@a20a8f71b587 /]# exit</code></pre>
+<p>在db1查看:</p>
+<pre><code class="javascript">[root@centos7 ~]# docker exec -it 75238caf083e /bin/bash
+[root@75238caf083e /]# ll /dbdata/
+total 0
+-rw-r--r-- 1 root root 0 Jul 20 23:23 name_dbdata.txt
+[root@75238caf083e /]# touch /dbdata/name_db1.txt   #再新建一个文件 看db2能不能都看到
+[root@75238caf083e /]# ll /dbdata/
+total 0
+-rw-r--r-- 1 root root 0 Jul 20 23:33 name_db1.txt
+-rw-r--r-- 1 root root 0 Jul 20 23:23 name_dbdata.txt
+[root@75238caf083e /]# </code></pre>
+<p>在db2查看:</p>
+<pre><code class="javascript">[root@centos7 ~]# docker start a0183698be06 
+a0183698be06
+[root@centos7 ~]# docker exec -ti  a0183698be06  /bin/bash  
+[root@a0183698be06 /]# ll /dbdata/
+total 0
+-rw-r--r-- 1 root root 0 Jul 20 23:33 name_db1.txt
+-rw-r--r-- 1 root root 0 Jul 20 23:23 name_dbdata.txt</code></pre>
+<p> #都可以看到 说明共享了</p>
+<p>问题：如果对己存在的容器 再次挂载数据卷呢？<br>答：？？？？？？？？</p>
+<p>删除数据卷容器<br>如果删除了挂载的容器（包括dbdata、db1、db2）,数据卷并没有自动删除；<br>如果要删除一个数据卷，必须在删除最后一个还挂载着它的容器时，显示使用dock rm -v 命令来指定同时删除关联的容器</p>
+<p>#-v: 删除与容器关联的卷</p>
+<pre><code class="javascript">[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+a0183698be06        docker.io/centos    &quot;/bin/bash&quot;         17 hours ago        Up 17 hours                             db2
+75238caf083e        docker.io/centos    &quot;/bin/bash&quot;         17 hours ago        Up 17 hours                             db1
+a20a8f71b587        docker.io/centos    &quot;/bin/bash&quot;         18 hours ago        Up 17 hours                             dbdata
+#停掉所有容器
+[root@centos7 ~]# docker stop a0183698be06 75238caf083e a20a8f71b587
+a0183698be06
+75238caf083e
+a20a8f71b587</code></pre>
+<p>#删除dbdata容器</p>
+<pre><code class="javascript">[root@centos7 ~]# docker rm a20a8f71b587 
+a20a8f71b587</code></pre>
+<p>#开启db 且看下数据卷dbdata是否还在</p>
+<pre><code class="javascript">[root@centos7 ~]# docker start 75238caf083e
+75238caf083e
+[root@centos7 ~]# docker exec -it 75238caf083e  /bin/bash   
+[root@75238caf083e /]# cd /dbdata/
+[root@75238caf083e dbdata]# ll
+total 0
+-rw-r--r-- 1 root root 0 Jul 20 23:33 name_db1.txt
+-rw-r--r-- 1 root root 0 Jul 20 23:23 name_dbdata.txt</code></pre>
+<p>#说明还是存在的</p>
+<pre><code class="javascript">[root@75238caf083e dbdata]# exit
+exit
+#删除db2容器
+[root@centos7 ~]# docker rm a0183698be06
+a0183698be06</code></pre>
+<p>#查找数据卷在本机上的存储路径</p>
+<pre><code class="javascript">[root@centos7 ~]# find / -name name_dbdata.txt
+/var/lib/docker/volumes/fa138eac7e5f7519052a7b47e8158938493424c50f5ef62f84537f556cf10818/_data/name_dbdata.txt</code></pre>
+<p>#关闭db1 且删除db1</p>
+<pre><code class="javascript">[root@centos7 ~]# docker stop 75238caf083e
+[root@centos7 ~]# docker rm -v 75238caf083e
+75238caf083e</code></pre>
+<p>#再次查找文件，发现己没有了。说明数据卷己删除了。</p>
+<pre><code class="javascript">[root@centos7 ~]# find / -name name_dbdata.txt
+[root@centos7 ~]# </code></pre>
+<h1 id="三、备份数据卷"><a href="#三、备份数据卷" class="headerlink" title="三、备份数据卷"></a>三、备份数据卷</h1><p>新建一个dbdata容器</p>
+<pre><code class="javascript">[root@centos7 ~]# docker run -it -d -v /dbdata --name dbdata docker.io/centos</code></pre>
+<p>#生成一个backup.txt文件 来验证等下的备份是否成功</p>
+<pre><code class="javascript">[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+9557a29349ed        docker.io/centos    &quot;/bin/bash&quot;         10 minutes ago      Exited (0) 10 minutes ago                       dbdata
+[root@centos7 ~]# docker start 9557a29349ed
+9557a29349ed
+[root@centos7 ~]# docker exec -it  9557a29349ed /bin/bash  
+[root@9557a29349ed /]# touch /dbdata/backup.txt
+[root@9557a29349ed /]# exit
+exit
+[root@centos7 ~]# </code></pre>
+<pre><code class="javascript">docker run --volumes-from dbdata -v $(pwd):/backup --name worker centos tar -zcvf /backup/backup.tar /dbdata
+-v $(pwd):/backup：将当前路径挂载到/backup
+tar -zcvf /backup/backup.tar /dbdata : 对/dbdata 进行打包 且放在/backup下</code></pre>
+<p>运行结果：</p>
+<pre><code class="javascript">[root@9557a29349ed /]# exit
+exit
+[root@centos7 ~]# docker run --volumes-from dbdata -v $(pwd):/backup --name worker centos tar -zcvf /backup/backup.tar /dbdata
+/dbdata/
+/dbdata/backup.txt
+tar: Removing leading `/&#39; from member names
+[root@centos7 ~]# ll backup.tar 
+-rw-r--r-- 1 root root 147 7月  22 02:04 backup.tar #在本机当前目录就可以看到了
+[root@centos7 ~]# </code></pre>
+<h1 id="四、恢复数据卷（这个我不能理解）？"><a href="#四、恢复数据卷（这个我不能理解）？" class="headerlink" title="四、恢复数据卷（这个我不能理解）？"></a>四、恢复数据卷（这个我不能理解）？</h1><p>为什么我这次新建的容器都是退出的状态？<br>为什么执行tar就会恢复到/dbdata吗？</p>
+<pre><code class="javascript">[root@centos7 ~]# docker run -v /dbdata --name  dbdata2 centos /bin/bash
+[root@centos7 ~]# docker ps a
+&quot;docker ps&quot; accepts no argument(s).
+See &#39;docker ps --help&#39;.
+
+Usage:  docker ps [OPTIONS]
+
+List containers
+[root@centos7 ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS               NAMES
+89d8e5d87dcd        centos              &quot;/bin/bash&quot;              9 seconds ago       Exited (0) 8 seconds ago                        dbdata2
+175beafbeed0        centos              &quot;tar -zcvf /backup...&quot;   21 minutes ago      Exited (0) 21 minutes ago                       worker
+9557a29349ed        docker.io/centos    &quot;/bin/bash&quot;              36 minutes ago      Up 23 minutes                                   dbdata
+[root@centos7 ~]# docker run --volumes-from dbdata2 -v $(pwd):/backup busybox tar xvf /backup/backup.tar
+Unable to find image &#39;busybox:latest&#39; locally
+Trying to pull repository docker.io/library/busybox ... 
+latest: Pulling from docker.io/library/busybox
+ee153a04d683: Pull complete 
+Digest: sha256:9f1003c480699be56815db0f8146ad2e22efea85129b5b5983d0e0fb52d9ab70
+Status: Downloaded newer image for docker.io/busybox:latest
+dbdata/
+dbdata/backup.txt</code></pre>
+<blockquote>
+<p>教程参考于：<a href="http://www.bdkyr.com/">http://www.bdkyr.com/</a></p>
+</blockquote>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/docker/">docker</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">走上人生的路途吧。前途很远，也很暗。然而不要怕，不怕的人面前才有路。--鲁迅</h3>
+        <div class="buttons is-centered">
+            
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/08/22/Centos7-docker基础5-网络配置/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Centos7 docker基础5-网络配置</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/08/22/Centos7-docker基础3-仓库/">
+                <span class="level-item">Centos7 docker基础3-仓库</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+    
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="wangzhirui">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        wangzhirui
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        哀其不幸，怒其不争
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>中国大陆</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            75
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章分类
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            3
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章标签
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            11
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zhiruiwang128" target="_blank" rel="noopener">
+                关注我</a>
+        </div>
+        
+        
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/apple/" style="font-size: 10px;">apple</a> <a href="/tags/centos/" style="font-size: 12px;">centos</a> <a href="/tags/docker/" style="font-size: 16px;">docker</a> <a href="/tags/iptables/" style="font-size: 12px;">iptables</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/mysql/" style="font-size: 14px;">mysql</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/oracle/" style="font-size: 18px;">oracle</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/zabbix/" style="font-size: 16px;">zabbix</a> <a href="/tags/越狱/" style="font-size: 10px;">越狱</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Ra1nUSBv2.0-Intel启动异常解决办法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T02:39:47.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Ra1nUSBv2.0-Intel启动异常解决办法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/吹水/">吹水</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Centos6的TCP Retransmission问题">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-25T09:09:16.000Z">2019-12-25</time></div>
+                    <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Centos6的TCP Retransmission问题</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="tomcat6连接人大金仓 报No suitable driver">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-06T09:30:03.000Z">2019-12-06</time></div>
+                    <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="title has-link-black-ter is-size-6 has-text-weight-normal">tomcat6连接人大金仓 报No suitable driver</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/27/su使用时环境变量注意事项/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="su使用时环境变量注意事项">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-27T03:09:57.000Z">2019-11-27</time></div>
+                    <a href="/2019/11/27/su使用时环境变量注意事项/" class="title has-link-black-ter is-size-6 has-text-weight-normal">su使用时环境变量注意事项</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="linux下limits.conf 修改不生效的原因">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-25T07:17:33.000Z">2019-11-25</time></div>
+                    <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="title has-link-black-ter is-size-6 has-text-weight-normal">linux下limits.conf 修改不生效的原因</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+
+                
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="Centos7 docker基础4-数据处理" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 wangzhirui&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+            </div>
+        </div>
+<span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+            <script>
+                var now = new Date();
+                function createtime() {
+                    var grt= new Date("03/13/2017 12:00:00");//此处修改你的建站时间或者网站上线时间
+                    now.setTime(now.getTime()+250);
+                    days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+                    hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+                    if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (
+60 * hnum);
+                    mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+                    seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+                    snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+                    document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+                    document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+                }
+            setInterval("createtime()",250);
+            </script>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'http://wangzhirui.com',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+
+
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

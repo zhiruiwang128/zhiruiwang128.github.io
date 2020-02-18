@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>LVM磁盘之LVM的创建 - R博客</title>
+
+
+    <meta name="description" content="什么是LVM？">
+<meta name="keywords" content="linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LVM磁盘之LVM的创建">
+<meta property="og:url" content="http://wangzhirui.com/2017/03/13/LVM磁盘之LVM的创建/index.html">
+<meta property="og:site_name" content="R博客">
+<meta property="og:description" content="什么是LVM？">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://wangzhirui.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-02-18T03:52:03.504Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LVM磁盘之LVM的创建">
+<meta name="twitter:description" content="什么是LVM？">
+<meta name="twitter:image" content="http://wangzhirui.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="LVM磁盘之LVM的创建" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档文章</a>
+                
+                <a class="navbar-item"
+                href="/categories">文章分类</a>
+                
+                <a class="navbar-item"
+                href="/tags">文章标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+<a class="navbar-item search">
+<span id="busuanzi_container_site_pv">
+  |  本站总访问量<span id="busuanzi_value_site_pv"</span>次
+</span>
+<span id="busuanzi_container_site_uv">
+  |  本站访客数<span id="busuanzi_value_site_uv"></span>人次  |
+</span>
+</a>
+
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2017-03-13T02:12:05.000Z">2017-03-13</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    8 分钟 读完 (大约 1258 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                LVM磁盘之LVM的创建
+            
+        </h1>
+        <div class="content">
+            <h3 id="什么是LVM？"><a href="#什么是LVM？" class="headerlink" title="什么是LVM？"></a>什么是LVM？</h3><a id="more"></a>
+<p>什么是LVM?LVM(Logical Volume Manager)逻辑卷管理，是一种将一个或多个硬盘的分区在逻辑上集合，相当于一个大硬盘来使用，当硬盘的空间不够使用的时候，可以继续将其它的硬盘的 分区加入其中，这样可以事项一种磁盘空间的动态管理，相对于普通的磁盘分区有很大的灵活性，使用普通的磁盘分区，当一个磁盘的分区空间不够使用的时候，可 能就会带来很大的麻烦。使用LVM在一定程度上就可以解决普通磁盘分区带来的问题。 </p>
+<h3 id="为什么使用LVM"><a href="#为什么使用LVM" class="headerlink" title="为什么使用LVM?"></a>为什么使用LVM?</h3><p>LVM通常用于装备大量磁盘的系统，但它同样适于仅有一、两块硬盘的小系统。</p>
+<h3 id="小系统使用LVM的益处"><a href="#小系统使用LVM的益处" class="headerlink" title="小系统使用LVM的益处?"></a>小系统使用LVM的益处?</h3><p>传统的文件系统是基于分区的，一个文件系统对应一个分区。这种方式比较直观，但不易改变：<br>1.不同的分区相对独立，无相互联系，各分区空间很易利用不平衡，空间不能充分利用；<br>2.当一个文件系统/分区已满时，无法对其扩充，只能采用重新分区/建立文件系统，非常麻烦；或把分区中的数据移到另一个更大的分区中；或采用符号连接的方式使用其它分区的空间。<br>3.如果要把硬盘上的多个分区合并在一起使用，只能采用再分区的方式，这个过程需要数据的备份与恢复。<br>当采用LVM时，情况有所不同：<br>1.硬盘的多个分区由LVM统一为卷组管理，可以方便的加入或移走分区以扩大或减小卷组的可用容量，充分利用硬盘空间；<br>2.文件系统建立在逻辑卷上，而逻辑卷可根据需要改变大小(在卷组容量范围内)以满足要求；<br>3.文件系统建立在LVM上，可以跨分区，方便使用；</p>
+<h3 id="大系统使用LVM的益处"><a href="#大系统使用LVM的益处" class="headerlink" title="大系统使用LVM的益处?"></a>大系统使用LVM的益处?</h3><p>在使用很多硬盘的大系统中，使用LVM主要是方便管理、增加了系统的扩展性。 在一个有很多不同容量硬盘的大型系统中，对不同的用户的空间分配是一个技巧性的工作，要在用户需求与实际可用空间中寻求平衡。用户/用户组的空间建立在LVM上，可以随时按要求增大，或根据使用情况对各逻辑卷进行调整。当系统空间不足而加入新的硬盘时，不必把用户的数据从原硬盘迁 移到新硬盘，而只须把新的分区加入卷组并扩充逻辑卷即可。同样，使用LVM可以在不停服务的情况下。把用户数据从旧硬盘转移到新硬盘空间中去。</p>
+<p><img src="https://i.loli.net/2019/10/08/1r5UyBQXWAP4p8i.png" alt="LVM01.png"></p>
+<p>PV（(Physical Volume）:物理盘，可以是磁盘或分区<br>VG（(Volume Group）：卷组，<br>LV（(Logical Volume）:逻辑卷，空间大小可以动态     </p>
+<p>1、分区</p>
+<pre><code class="javascript">[root@rui ~]# fdisk /dev/sdb
+Command (m for help): p
+Disk /dev/sdb: 21.5 GB, 21474836480 bytes
+255 heads, 63 sectors/track, 2610 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x6e871b62
+   Device Boot      Start         End      Blocks   Id  System
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 1
+First cylinder (1-2610, default 1):  
+Using default value 1
+Last cylinder, +cylinders or +size{K,M,G} (1-2610, default 2610): +1G
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 2
+First cylinder (133-2610, default 133): 
+Using default value 133
+Last cylinder, +cylinders or +size{K,M,G} (133-2610, default 2610): +5G
+
+#设置lvm磁盘标识
+Command (m for help): t
+Partition number (1-4): 1
+Hex code (type L to list codes): 8e
+Changed system type of partition 1 to 8e (Linux LVM)
+
+Command (m for help): t
+Partition number (1-4): 2
+Hex code (type L to list codes): 8e
+Changed system type of partition 2 to 8e (Linux LVM)
+
+Command (m for help): p
+
+Disk /dev/sdb: 21.5 GB, 21474836480 bytes
+255 heads, 63 sectors/track, 2610 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x6e871b62
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1         132     1060258+  8e  Linux LVM
+/dev/sdb2             133         786     5253255   8e  Linux LVM
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+[root@rui ~]# </code></pre>
+<p>重启系统或partprobe重读分区表</p>
+<p>/dev/sdc的步骤同上的</p>
+<p><img src="https://i.loli.net/2019/10/08/vHtNVyGcZ13nFMd.png" alt="LVM02.png"></p>
+<p>2、用pvcreate来创建pv</p>
+<pre><code>pvcreate /dev/sdb1 /dev/sdb2 /dev/sdc1 /dev/sdc2 </code></pre><p>将上面四个分区做pv</p>
+<p><img src="https://i.loli.net/2019/10/08/CHniQ8462MXvpeT.png" alt="LVM03.png"></p>
+<p><img src="https://i.loli.net/2019/10/08/UfguoAKhzGOTMBc.png" alt="LVM04.png"></p>
+<p>3、使用vgcreate 创建 VG</p>
+<pre><code>vgcreate vgname /dev/1 /dev/2 /dev/sdc1 /dev/sdc2</code></pre><p><img src="https://i.loli.net/2019/10/08/Be4NrRfXFhZUj63.png" alt="LVM05.png"></p>
+<p><img src="https://i.loli.net/2019/10/08/ipTFCO7ELM18zbk.png" alt="LVM06.png"></p>
+<p>4、使用lvcreate创建一个逻辑分区（lv）</p>
+<pre><code>lvcreate -L 500M -n lvname vgname</code></pre><p>-L 指定大小<br>-n 指定名字</p>
+<p><img src="https://i.loli.net/2019/10/08/ty3awHNWM52FIve.png" alt="LVM07.png"></p>
+<p><img src="https://i.loli.net/2019/10/08/wfvZmp8Yqc39e1X.png" alt="LVM08.png"></p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/linux/">linux</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">走上人生的路途吧。前途很远，也很暗。然而不要怕，不怕的人面前才有路。--鲁迅</h3>
+        <div class="buttons is-centered">
+            
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2018/02/11/转-Ubuntu-14-04下安装文本编辑软件-CherryTree-0-33-0/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">[转]Ubuntu 14.04下安装文本编辑软件 CherryTree 0.33.0</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2017/03/08/emctl-start-dbconsole报错/">
+                <span class="level-item">emctl start dbconsole报错</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+    
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="wangzhirui">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        wangzhirui
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        哀其不幸，怒其不争
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>中国大陆</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            75
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章分类
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            3
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章标签
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            11
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zhiruiwang128" target="_blank" rel="noopener">
+                关注我</a>
+        </div>
+        
+        
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/apple/" style="font-size: 10px;">apple</a> <a href="/tags/centos/" style="font-size: 12px;">centos</a> <a href="/tags/docker/" style="font-size: 16px;">docker</a> <a href="/tags/iptables/" style="font-size: 12px;">iptables</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/mysql/" style="font-size: 14px;">mysql</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/oracle/" style="font-size: 18px;">oracle</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/zabbix/" style="font-size: 16px;">zabbix</a> <a href="/tags/越狱/" style="font-size: 10px;">越狱</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Ra1nUSBv2.0-Intel启动异常解决办法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T02:39:47.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Ra1nUSBv2.0-Intel启动异常解决办法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/吹水/">吹水</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Centos6的TCP Retransmission问题">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-25T09:09:16.000Z">2019-12-25</time></div>
+                    <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Centos6的TCP Retransmission问题</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="tomcat6连接人大金仓 报No suitable driver">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-06T09:30:03.000Z">2019-12-06</time></div>
+                    <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="title has-link-black-ter is-size-6 has-text-weight-normal">tomcat6连接人大金仓 报No suitable driver</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/27/su使用时环境变量注意事项/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="su使用时环境变量注意事项">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-27T03:09:57.000Z">2019-11-27</time></div>
+                    <a href="/2019/11/27/su使用时环境变量注意事项/" class="title has-link-black-ter is-size-6 has-text-weight-normal">su使用时环境变量注意事项</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="linux下limits.conf 修改不生效的原因">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-25T07:17:33.000Z">2019-11-25</time></div>
+                    <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="title has-link-black-ter is-size-6 has-text-weight-normal">linux下limits.conf 修改不生效的原因</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+
+                
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="LVM磁盘之LVM的创建" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 wangzhirui&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+            </div>
+        </div>
+<span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+            <script>
+                var now = new Date();
+                function createtime() {
+                    var grt= new Date("03/13/2017 12:00:00");//此处修改你的建站时间或者网站上线时间
+                    now.setTime(now.getTime()+250);
+                    days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+                    hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+                    if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (
+60 * hnum);
+                    mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+                    seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+                    snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+                    document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+                    document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+                }
+            setInterval("createtime()",250);
+            </script>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'http://wangzhirui.com',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+
+
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

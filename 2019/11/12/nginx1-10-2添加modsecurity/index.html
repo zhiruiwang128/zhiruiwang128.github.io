@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>nginx1.10.2添加modsecurity - R博客</title>
+
+
+    <meta name="description" content="ModSecurity 简介ModSecurity是一个入侵侦测与防护引擎，它主要是用于Web 应用程序，所以也被称为Web应用程序防火墙。它可以作为Apache Web服务器的模块或是单独的应用程序来运作。">
+<meta name="keywords" content="nginx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx1.10.2添加modsecurity">
+<meta property="og:url" content="http://wangzhirui.com/2019/11/12/nginx1-10-2添加modsecurity/index.html">
+<meta property="og:site_name" content="R博客">
+<meta property="og:description" content="ModSecurity 简介ModSecurity是一个入侵侦测与防护引擎，它主要是用于Web 应用程序，所以也被称为Web应用程序防火墙。它可以作为Apache Web服务器的模块或是单独的应用程序来运作。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://wangzhirui.com/images/og_image.png">
+<meta property="og:updated_time" content="2020-02-18T03:52:03.506Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="nginx1.10.2添加modsecurity">
+<meta name="twitter:description" content="ModSecurity 简介ModSecurity是一个入侵侦测与防护引擎，它主要是用于Web 应用程序，所以也被称为Web应用程序防火墙。它可以作为Apache Web服务器的模块或是单独的应用程序来运作。">
+<meta name="twitter:image" content="http://wangzhirui.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="nginx1.10.2添加modsecurity" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档文章</a>
+                
+                <a class="navbar-item"
+                href="/categories">文章分类</a>
+                
+                <a class="navbar-item"
+                href="/tags">文章标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+<a class="navbar-item search">
+<span id="busuanzi_container_site_pv">
+  |  本站总访问量<span id="busuanzi_value_site_pv"</span>次
+</span>
+<span id="busuanzi_container_site_uv">
+  |  本站访客数<span id="busuanzi_value_site_uv"></span>人次  |
+</span>
+</a>
+
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-11-12T08:33:38.000Z">2019-11-12</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    12 分钟 读完 (大约 1768 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                nginx1.10.2添加modsecurity
+            
+        </h1>
+        <div class="content">
+            <h1 id="ModSecurity-简介"><a href="#ModSecurity-简介" class="headerlink" title="ModSecurity 简介"></a>ModSecurity 简介</h1><p>ModSecurity是一个入侵侦测与防护引擎，它主要是用于Web 应用程序，所以也被称为Web应用程序防火墙。<br>它可以作为Apache Web服务器的模块或是单独的应用程序来运作。    </p>
+<a id="more"></a>
+<p>ModSecurity的功能是增强Web application的安全性和保护Web application以避免遭受来自已知与未知的攻击。<br>听说与nginx配合，效果也很好。</p>
+<p>环境：</p>
+<pre><code class="javascript">CentOS Linux release 7.7.1908 (Core)
+nginx/1.10.2
+modsecurity-v3.0.3
+ModSecurity-nginx-master
+owasp-modsecurity-crs-3.0-master</code></pre>
+<p>1、编译nginx</p>
+<pre><code class="javascript">./configure  --prefix=/usr/local/nginx --with-openssl=/root/openssl-1.0.2l/ --with-http_ssl_module</code></pre>
+<p>2、安装nginx报错：</p>
+<pre><code class="javascript">        /root/nginx-sticky-module-1.1/ngx_http_sticky_module.c
+/root/nginx-sticky-module-1.1/ngx_http_sticky_module.c: 在函数‘ngx_http_get_sticky_peer’中:
+/root/nginx-sticky-module-1.1/ngx_http_sticky_module.c:333:21: 错误：赋值时将整数赋给指针，未作类型转换 [-Werror]
+   iphp-&gt;rrp.current = iphp-&gt;selected_peer;
+                     ^
+cc1: all warnings being treated as errors
+make[1]: *** [objs/addon/nginx-sticky-module-1.1/ngx_http_sticky_module.o] 错误 1
+make[1]: 离开目录“/root/nginx-1.10.2”
+make: *** [build] 错误 2</code></pre>
+<p>3、修改文件ngx_http_sticky_module.c （主要是#if到#endif这块）</p>
+<pre><code class="javascript">        if (peer &amp;&amp; selected_peer &gt;= 0) { 
+                ngx_log_debug(NGX_LOG_DEBUG_HTTP, pc-&gt;log, 0, &quot;[sticky/get_sticky_peer] peer found at index %i&quot;, selected_pe
+er);
+
+#if defined(nginx_version) &amp;&amp; nginx_version &gt;= 1009000 
+                iphp-&gt;rrp.current = peer; 
+#else
+                iphp-&gt;rrp.current = iphp-&gt;selected_peer;
+#endif
+                pc-&gt;cached = 0;
+                pc-&gt;connection = NULL; 
+                pc-&gt;sockaddr = peer-&gt;sockaddr;
+                pc-&gt;socklen = peer-&gt;socklen;
+                pc-&gt;name = &amp;peer-&gt;name;</code></pre>
+<p>4、再次安装nginx，安装成功。</p>
+<p>5、建立modsecurity的动态链接</p>
+<pre><code class="javascript">./configure  --prefix=/usr/local/nginx --with-openssl=/root/openssl-1.0.2l/ --with-http_ssl_module --add-module=/root/nginx-sticky-module-1.1 --add-dynamic-module=/root/ModSecurity-nginx-master
+make &amp;&amp; make install
+mkdir /usr/local/nginx/modules
+cp /root/nginx-1.10.2/objs/ngx_http_modsecurity_module.so /usr/local/nginx/modules/</code></pre>
+<p>6、配置modsecurity</p>
+<pre><code class="javascript">[root@nessus nginx]# mkdir /usr/local/nginx/modsec
+[root@nessus nginx]# cp ~/modsecurity-v3.0.3/modsecurity.conf-recommended  /usr/local/nginx/modsec/modsecurity.conf
+[root@nessus nginx]# sed -i &#39;s/SecRuleEngine DetectionOnly/SecRuleEngine On/&#39; /usr/local/nginx/modsec/modsecurity.conf</code></pre>
+<p>7、手动创建main.conf文件</p>
+<pre><code class="javascript">[root@nessus modsec]# cat  /usr/local/nginx/modsec/main.conf   
+# From https://github.com/SpiderLabs/ModSecurity/blob/master/\
+# modsecurity.conf-recommended
+#
+# Edit to set SecRuleEngine On
+Include &quot;/usr/local/nginx/modsec/modsecurity.conf&quot;
+
+# Basic test rule
+SecRule ARGS:testparam &quot;@contains test&quot; &quot;id:1234,deny,status:403&quot;
+[root@nessus modsec]# </code></pre>
+<p>8、nginx.conf首行添加</p>
+<pre><code class="javascript">load_module modules/ngx_http_modsecurity_module.so; #添加modsecurity的模块</code></pre>
+<p>9、在nginx.conf 在server块添加</p>
+<pre><code class="javascript">    server {
+        modsecurity on; #启用modsecurity
+        modsecurity_rules_file /usr/local/nginx/modsec/main.conf; #指定规则文件路径
+        listen       80;
+        server_name  localhost;</code></pre>
+<p>10、复制unicode.mapping到modsec</p>
+<pre><code class="javascript">cp /root/modsecurity-v3.0.3/unicode.mapping /usr/local/nginx/modsec/</code></pre>
+<p>不然会报错：</p>
+<pre><code class="javascript">[root@nessus sbin]# ./nginx -t
+nginx: [emerg] &quot;modsecurity_rules_file&quot; directive Rules error. File: /usr/local/nginx/modsec/modsecurity.conf. Line: 236. Column: 17. Failed to locate the unicode map file from: unicode.mapping Looking at: &#39;unicode.mapping&#39;, &#39;unicode.mapping&#39;, &#39;/usr/local/nginx/modsec/unicode.mapping&#39;, &#39;/usr/local/nginx/modsec/unicode.mapping&#39;.  in /usr/local/nginx/conf/nginx.conf:37
+nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed</code></pre>
+<p>11、测试nginx </p>
+<pre><code class="javascript">[root@nessus ~]# /usr/local/nginx/sbin/nginx  -t
+nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /usr/local/nginx/conf/nginx.conf test is successful
+[root@nessus ~]#</code></pre>
+<p>12、启动nginx</p>
+<pre><code class="javascript">[root@nessus ~]# /usr/local/nginx/sbin/nginx 
+[root@nessus ~]# ps -ef | grep nginx
+root     25104     1  0 11:20 ?        00:00:00 nginx: master process /usr/local/nginx/sbin/nginx
+nobody   25105 25104  0 11:20 ?        00:00:00 nginx: worker process
+root     25107 21800  0 11:20 pts/0    00:00:00 grep --color=auto nginx
+[root@nessus ~]# </code></pre>
+<p>13、测试拦截</p>
+<pre><code class="javascript">[root@nessus ~]#  curl localhost?testparam=test
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;403 Forbidden&lt;/title&gt;&lt;/head&gt;
+&lt;body bgcolor=&quot;white&quot;&gt;
+&lt;center&gt;&lt;h1&gt;403 Forbidden&lt;/h1&gt;&lt;/center&gt;
+&lt;hr&gt;&lt;center&gt;nginx/1.10.2&lt;/center&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>14、查看modsecurity日志：</p>
+<pre><code class="javascript">[root@nessus ~]# cat /var/log/modsec_audit.log 
+---8xMZOadF---A--
+[23/Oct/2019:11:22:01 +0800] 157180092113.733856 127.0.0.1 40190 127.0.0.1 80
+---8xMZOadF---B--
+GET /?testparam=test HTTP/1.1
+User-Agent: curl/7.29.0
+Host: localhost
+Accept: */*
+
+---8xMZOadF---D--
+
+---8xMZOadF---E--
+&lt;html&gt;\x0d\x0a&lt;head&gt;&lt;title&gt;403 Forbidden&lt;/title&gt;&lt;/head&gt;\x0d\x0a&lt;body bgcolor=&quot;white&quot;&gt;\x0d\x0a&lt;center&gt;&lt;h1&gt;403 Forbidden&lt;/h1&gt;&lt;/center&gt;\x0d\x0a&lt;hr&gt;&lt;center&gt;nginx/1.10.2&lt;/center&gt;\x0d\x0a&lt;/body&gt;\x0d\x0a&lt;/html&gt;\x0d\x0a
+
+---8xMZOadF---F--
+HTTP/1.1 403
+Server: nginx/1.10.2
+Date: Wed, 23 Oct 2019 03:22:01 GMT
+Content-Length: 169
+Content-Type: text/html
+Connection: keep-alive
+
+---8xMZOadF---H--
+
+---8xMZOadF---I--
+
+---8xMZOadF---J--
+
+---8xMZOadF---Z--
+
+[root@nessus ~]# </code></pre>
+</br>
+
+<h1 id="OWASP-ModSecurity核心规则集（CRS）"><a href="#OWASP-ModSecurity核心规则集（CRS）" class="headerlink" title="OWASP ModSecurity核心规则集（CRS）"></a>OWASP ModSecurity核心规则集（CRS）</h1><p>1、导入规则<br>上传owasp-modsecurity-crs-3.3-dev.zip<br>复制crs的配置文件</p>
+<pre><code class="javascript">cp /root/owasp-modsecurity-crs-3.0-master/crs-setup.conf.example  /usr/local/nginx/modsec/modsecurity_crs_10_setup.conf</code></pre>
+<p>2、创建目录 用于存放规则</p>
+<pre><code class="javascript">mkdir /usr/local/nginx/modsec/modsecurity-crs
+cp /root/owasp-modsecurity-crs-3.0-master/rules/* /usr/local/nginx/modsec/modsecurity-crs/</code></pre>
+<p>3、在/usr/local/nginx/modsecmain.conf末尾添加</p>
+<pre><code class="javascript">Include modsecurity_crs_10_setup.conf
+Include modsecurity-crs/REQUEST-901-INITIALIZATION.conf
+Include modsecurity-crs/REQUEST-903.9001-DRUPAL-EXCLUSION-RULES.conf
+Include modsecurity-crs/REQUEST-903.9002-WORDPRESS-EXCLUSION-RULES.conf
+Include modsecurity-crs/REQUEST-905-COMMON-EXCEPTIONS.conf
+#Include modsecurity-crs/REQUEST-910-IP-REPUTATION.conf #有点问题 先注释掉
+Include modsecurity-crs/REQUEST-911-METHOD-ENFORCEMENT.conf
+Include modsecurity-crs/REQUEST-912-DOS-PROTECTION.conf
+Include modsecurity-crs/REQUEST-913-SCANNER-DETECTION.conf
+Include modsecurity-crs/REQUEST-920-PROTOCOL-ENFORCEMENT.conf
+Include modsecurity-crs/REQUEST-921-PROTOCOL-ATTACK.conf
+Include modsecurity-crs/REQUEST-930-APPLICATION-ATTACK-LFI.conf
+Include modsecurity-crs/REQUEST-931-APPLICATION-ATTACK-RFI.conf
+Include modsecurity-crs/REQUEST-932-APPLICATION-ATTACK-RCE.conf
+Include modsecurity-crs/REQUEST-933-APPLICATION-ATTACK-PHP.conf
+Include modsecurity-crs/REQUEST-941-APPLICATION-ATTACK-XSS.conf
+Include modsecurity-crs/REQUEST-942-APPLICATION-ATTACK-SQLI.conf
+Include modsecurity-crs/REQUEST-943-APPLICATION-ATTACK-SESSION-FIXATION.conf
+Include modsecurity-crs/REQUEST-949-BLOCKING-EVALUATION.conf
+Include modsecurity-crs/RESPONSE-950-DATA-LEAKAGES.conf
+Include modsecurity-crs/RESPONSE-951-DATA-LEAKAGES-SQL.conf
+Include modsecurity-crs/RESPONSE-952-DATA-LEAKAGES-JAVA.conf
+Include modsecurity-crs/RESPONSE-953-DATA-LEAKAGES-PHP.conf
+Include modsecurity-crs/RESPONSE-954-DATA-LEAKAGES-IIS.conf
+Include modsecurity-crs/RESPONSE-959-BLOCKING-EVALUATION.conf
+Include modsecurity-crs/RESPONSE-980-CORRELATION.conf</code></pre>
+<p>4、规则文件名解释：<br>主要规则文件：</p>
+<pre><code class="javascript">REQUEST-910-IP-REPUTATION.conf（可疑IP匹配)
+REQUEST-912-DOS-PROTECTION.conf（DDOS攻击）
+REQUEST-913-SCANNER-DETECTION.conf（扫描器检测）
+REQUEST-920-PROTOCOL-ENFORCEMENT.conf（HTTP协议规范相关规则）
+REQUEST-921-PROTOCOL-ATTACK.conf（协议攻击）
+
+举例：HTTP Header Injection Attack、HTTP参数污染
+
+REQUEST-930-APPLICATION-ATTACK-LFI.conf（应用攻击-路径遍历）
+REQUEST-931-APPLICATION-ATTACK-RFI.conf（远程文件包含）
+REQUEST-932-APPLICATION-ATTACK-RCE.conf（远程命令执行）
+REQUEST-933-APPLICATION-ATTACK-PHP.conf（PHP注入攻击）
+REQUEST-941-APPLICATION-ATTACK-XSS.conf（XSS）
+REQUEST-942-APPLICATION-ATTACK-SQLI.conf（SQL注入）
+REQUEST-943-APPLICATION-ATTACK-SESSION-FIXATION.conf（会话固定）
+REQUEST-949-BLOCKING-EVALUATION.conf（）
+RESPONSE-950-DATA-LEAKAGES.conf（信息泄露）
+RESPONSE-951-DATA-LEAKAGES-SQL.conf（SQL信息泄露）
+RESPONSE-952-DATA-LEAKAGES-JAVA.conf（JAVA源代码泄露）
+RESPONSE-953-DATA-LEAKAGES-PHP.conf（PHP信息泄露）
+RESPONSE-954-DATA-LEAKAGES-IIS.conf（IIS信息泄露）
+————————————————
+版权声明：本文为CSDN博主「crystal_da」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/Sydney_d/article/details/81740534</code></pre>
+<p>也可以参考：<a href="https://blog.slogra.com/doc/modsecurity_crs.html">https://blog.slogra.com/doc/modsecurity_crs.html</a></p>
+<p>5、重启nginx:</p>
+<pre><code class="javascript">/usr/local/nginx/sbin/nginx -s reload</code></pre>
+</br>
+
+<p>测试：（假装sql注入）</p>
+<p><img src="https://i.loli.net/2019/11/12/MVIYW9JwxzA5Clf.png" alt=""></p>
+<p>查看modsecurity后台日志：/var/log/modsec_audit.log </p>
+<pre><code class="javascript">ModSecurity: Warning. Matched &quot;Operator `Rx&#39; with parameter `^[\d.:]+$&#39; against variable `REQUEST_HEADERS:Host&#39; (Value: `192.168.15.146&#39; ) [file &quot;/usr/local/nginx/modsec/modsecurity-crs/REQUEST-920-PROTOCOL-ENFORCEMENT.conf&quot;] [line &quot;777&quot;] [id &quot;920350&quot;] [rev &quot;2&quot;] [msg &quot;Host header is a numeric IP address&quot;] [data &quot;192.168.15.146&quot;] [severity &quot;4&quot;] [ver &quot;OWASP_CRS/3.0.0&quot;] [maturity &quot;9&quot;] [accuracy &quot;9&quot;] [tag &quot;application-multi&quot;] [tag &quot;language-multi&quot;] [tag &quot;platform-multi&quot;] [tag &quot;attack-protocol&quot;] [tag &quot;OWASP_CRS/PROTOCOL_VIOLATION/IP_HOST&quot;] [tag &quot;WASCTC/WASC-21&quot;] [tag &quot;OWASP_TOP_10/A7&quot;] [tag &quot;PCI/6.5.10&quot;] [hostname &quot;192.168.10.126&quot;] [uri &quot;/test&quot;] [unique_id &quot;157181161484.259919&quot;] [ref &quot;o0,14v42,14&quot;]
+ModSecurity: Warning. detected SQLi using libinjection. [file &quot;/usr/local/nginx/modsec/modsecurity-crs/REQUEST-942-APPLICATION-ATTACK-SQLI.conf&quot;] [line &quot;43&quot;] [id &quot;942100&quot;] [rev &quot;1&quot;] [msg &quot;SQL Injection Attack Detected via libinjection&quot;] [data &quot;Matched Data: 1&amp;1 found within ARGS:id: 1 and 1=1&quot;] [severity &quot;2&quot;] [ver &quot;OWASP_CRS/3.0.0&quot;] [maturity &quot;1&quot;] [accuracy &quot;8&quot;] [hostname &quot;192.168.10.126&quot;] [uri &quot;/test&quot;] [unique_id &quot;157181161484.259919&quot;] [ref &quot;v13,9&quot;]
+ModSecurity: Access denied with code 403 (phase 2). Matched &quot;Operator `Ge&#39; with parameter `5&#39; against variable `TX:ANOMALY_SCORE&#39; (Value: `8&#39; ) [file &quot;/usr/local/nginx/modsec/modsecurity-crs/REQUEST-949-BLOCKING-EVALUATION.conf&quot;] [line &quot;44&quot;] [id &quot;949110&quot;] [rev &quot;&quot;] [msg &quot;Inbound Anomaly Score Exceeded (Total Score: 8)&quot;] [data &quot;&quot;] [severity &quot;2&quot;] [ver &quot;&quot;] [maturity &quot;0&quot;] [accuracy &quot;0&quot;] [tag &quot;application-multi&quot;] [tag &quot;language-multi&quot;] [tag &quot;platform-multi&quot;] [tag &quot;attack-generic&quot;] [hostname &quot;192.168.10.126&quot;] [uri &quot;/test&quot;] [unique_id &quot;157181161484.259919&quot;] [ref &quot;&quot;]
+ModSecurity: Warning. Matched &quot;Operator `Ge&#39; with parameter `5&#39; against variable `TX:INBOUND_ANOMALY_SCORE&#39; (Value: `8&#39; ) [file &quot;/usr/local/nginx/modsec/modsecurity-crs/RESPONSE-980-CORRELATION.conf&quot;] [line &quot;65&quot;] [id &quot;980130&quot;] [rev &quot;&quot;] [msg &quot;Inbound Anomaly Score Exceeded (Total Inbound Score: 8 - SQLI=5,XSS=0,RFI=0,LFI=0,RCE=0,PHPI=0,HTTP=0,SESS=0): SQL Injection Attack Detected via libinjection&quot;] [data &quot;&quot;] [severity &quot;0&quot;] [ver &quot;&quot;] [maturity &quot;0&quot;] [accuracy &quot;0&quot;] [tag &quot;event-correlation&quot;] [hostname &quot;192.168.10.126&quot;] [uri &quot;/test&quot;] [unique_id &quot;157181161484.259919&quot;] [ref &quot;&quot;]</code></pre>
+<p>实验完成</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/nginx/">nginx</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">走上人生的路途吧。前途很远，也很暗。然而不要怕，不怕的人面前才有路。--鲁迅</h3>
+        <div class="buttons is-centered">
+            
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/11/19/终于有人把Linux运维工程师说清楚了！靠谱！/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">终于有人把Linux运维工程师说清楚了！靠谱！</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/11/12/nginx无法获取X-Forwarded-For过来的IP/">
+                <span class="level-item">nginx无法获取X-Forwarded-For过来的IP</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+    
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="wangzhirui">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        wangzhirui
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        哀其不幸，怒其不争
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>中国大陆</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            75
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章分类
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            3
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章标签
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            11
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zhiruiwang128" target="_blank" rel="noopener">
+                关注我</a>
+        </div>
+        
+        
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/apple/" style="font-size: 10px;">apple</a> <a href="/tags/centos/" style="font-size: 12px;">centos</a> <a href="/tags/docker/" style="font-size: 16px;">docker</a> <a href="/tags/iptables/" style="font-size: 12px;">iptables</a> <a href="/tags/linux/" style="font-size: 20px;">linux</a> <a href="/tags/mysql/" style="font-size: 14px;">mysql</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/oracle/" style="font-size: 18px;">oracle</a> <a href="/tags/python/" style="font-size: 10px;">python</a> <a href="/tags/zabbix/" style="font-size: 16px;">zabbix</a> <a href="/tags/越狱/" style="font-size: 10px;">越狱</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Ra1nUSBv2.0-Intel启动异常解决办法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-13T02:39:47.000Z">2020-01-13</time></div>
+                    <a href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Ra1nUSBv2.0-Intel启动异常解决办法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/吹水/">吹水</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="Centos6的TCP Retransmission问题">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-25T09:09:16.000Z">2019-12-25</time></div>
+                    <a href="/2019/12/25/Centos6的TCP-Retransmission问题/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Centos6的TCP Retransmission问题</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="tomcat6连接人大金仓 报No suitable driver">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-06T09:30:03.000Z">2019-12-06</time></div>
+                    <a href="/2019/12/06/tomcat6连接人大金仓-报No-suitable-driver/" class="title has-link-black-ter is-size-6 has-text-weight-normal">tomcat6连接人大金仓 报No suitable driver</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/27/su使用时环境变量注意事项/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="su使用时环境变量注意事项">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-27T03:09:57.000Z">2019-11-27</time></div>
+                    <a href="/2019/11/27/su使用时环境变量注意事项/" class="title has-link-black-ter is-size-6 has-text-weight-normal">su使用时环境变量注意事项</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.png" alt="linux下limits.conf 修改不生效的原因">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-25T07:17:33.000Z">2019-11-25</time></div>
+                    <a href="/2019/11/25/linux下limits-conf-修改不生效的原因/" class="title has-link-black-ter is-size-6 has-text-weight-normal">linux下limits.conf 修改不生效的原因</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/运维/">运维</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+
+                
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="nginx1.10.2添加modsecurity" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 wangzhirui&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                </p>
+            </div>
+            <div class="level-end">
+            
+            </div>
+        </div>
+<span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+            <script>
+                var now = new Date();
+                function createtime() {
+                    var grt= new Date("03/13/2017 12:00:00");//此处修改你的建站时间或者网站上线时间
+                    now.setTime(now.getTime()+250);
+                    days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+                    hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+                    if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (
+60 * hnum);
+                    mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+                    seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+                    snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+                    document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+                    document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+                }
+            setInterval("createtime()",250);
+            </script>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'http://wangzhirui.com',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+
+
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
