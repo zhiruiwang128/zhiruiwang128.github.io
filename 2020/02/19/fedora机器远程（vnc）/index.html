@@ -7,21 +7,21 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>google Authenticator加强ssh - R博客</title>
+<title>fedora机器远程（vnc） - R博客</title>
 
 
-    <meta name="description" content="环境: CentOS release 6.8 (Final) Linux host.localdomain 4.10.4-1.el6.elrepo.i686 #1 SMP Sat Mar 18 11:05:18 EDT 2017 i686 i686 i386 GNU/Linux OpenSSH_5.3p1, OpenSSL 1.0.1e-fips 11 Feb 2013">
+    <meta name="description" content="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠） dnf install @xfce-desktop-environment -y安装过程点久 2、安装vncyum install tigervnc-server -y3、在哪个用户下运行，远程桌面与密码就是哪个用户的。#su到自己的用户下执行 [root@dev ~]# vncserver :2">
 <meta property="og:type" content="article">
-<meta property="og:title" content="google Authenticator加强ssh">
-<meta property="og:url" content="http://wangzhirui.com/2019/08/20/google-Authenticator加强ssh/index.html">
+<meta property="og:title" content="fedora机器远程（vnc）">
+<meta property="og:url" content="http://wangzhirui.com/2020/02/19/fedora机器远程（vnc）/index.html">
 <meta property="og:site_name" content="R博客">
-<meta property="og:description" content="环境: CentOS release 6.8 (Final) Linux host.localdomain 4.10.4-1.el6.elrepo.i686 #1 SMP Sat Mar 18 11:05:18 EDT 2017 i686 i686 i386 GNU/Linux OpenSSH_5.3p1, OpenSSL 1.0.1e-fips 11 Feb 2013">
+<meta property="og:description" content="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠） dnf install @xfce-desktop-environment -y安装过程点久 2、安装vncyum install tigervnc-server -y3、在哪个用户下运行，远程桌面与密码就是哪个用户的。#su到自己的用户下执行 [root@dev ~]# vncserver :2">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://wangzhirui.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-02-18T03:52:03.505Z">
+<meta property="og:updated_time" content="2020-02-19T05:52:46.980Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="google Authenticator加强ssh">
-<meta name="twitter:description" content="环境: CentOS release 6.8 (Final) Linux host.localdomain 4.10.4-1.el6.elrepo.i686 #1 SMP Sat Mar 18 11:05:18 EDT 2017 i686 i686 i386 GNU/Linux OpenSSH_5.3p1, OpenSSL 1.0.1e-fips 11 Feb 2013">
+<meta name="twitter:title" content="fedora机器远程（vnc）">
+<meta name="twitter:description" content="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠） dnf install @xfce-desktop-environment -y安装过程点久 2、安装vncyum install tigervnc-server -y3、在哪个用户下运行，远程桌面与密码就是哪个用户的。#su到自己的用户下执行 [root@dev ~]# vncserver :2">
 <meta name="twitter:image" content="http://wangzhirui.com/images/og_image.png">
 
 
@@ -81,7 +81,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.png" alt="google Authenticator加强ssh" height="28">
+                <img src="/images/logo.png" alt="fedora机器远程（vnc）" height="28">
             
             </a>
         </div>
@@ -139,7 +139,7 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-08-20T09:17:39.000Z">2019-08-20</time>
+                <time class="level-item has-text-grey" datetime="2020-02-19T05:52:30.000Z">2020-02-19</time>
                 
                 <div class="level-item">
                 <a class="has-link-grey -link" href="/categories/运维/">运维</a>
@@ -149,7 +149,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    5 分钟 读完 (大约 770 个字)
+                    3 分钟 读完 (大约 434 个字)
                 </span>
                 
                 
@@ -163,65 +163,49 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                google Authenticator加强ssh
+                fedora机器远程（vnc）
             
         </h1>
         <div class="content">
-            <p>环境:</p>
-<pre><code>CentOS release 6.8 (Final)
-Linux host.localdomain 4.10.4-1.el6.elrepo.i686 #1 SMP Sat Mar 18 11:05:18 EDT 2017 i686 i686 i386 GNU/Linux
-OpenSSH_5.3p1, OpenSSL 1.0.1e-fips 11 Feb 2013</code></pre><a id="more"></a>
-<p>安装一些软件依赖</p>
-<pre><code>yum -y install wget gcc make pam-devel libpng-devel</code></pre><p>该软件为非必须包，其主要用于在终端下生成二维码用。</p>
-<pre><code>wget http://fukuchi.org/works/qrencode/qrencode-3.4.1.tar.gz
-tar zxf qrencode-3.4.1.tar.gz
-cd qrencode-3.4.1
-./configure --prefix=/usr &amp;&amp; make &amp;&amp; make install</code></pre><p>google authenticator PAM插件安装</p>
-<pre><code>git clone https://github.com/google/google-authenticator-libpam
-cd google-authenticator-libpam/
-sh bootstrap.sh 
- ./configure -prefix=/usr/google
- make &amp;&amp; make install </code></pre><p>运行google-authenticator</p>
-<pre><code>cd /usr/google/
- ./google-authenticator </code></pre><p>此时终端显示二维码与五个码用于在取不到或错的验证码有错时，用于应急用的。不过每个只能用一次，不能重复使用。</p>
-<pre><code>Do you want authentication tokens to be time-based (y/n) y
-https://www.google.com/chart?chs=200x200&amp;chld=M|0&amp;cht=qr&amp;chl=otpauth://totp/root@wyw%3Fsecret%3DHLGYC5FTL4WKEGNE  #这个链接只能在FQ条件下才能打开 
-Your new secret key is: HLGYC5FTL4WKEGNE  #如果在手机的谷歌身份验证器上不想通过&quot;扫描条形码&quot;的方式添加，就输入这个key，通过&quot;手动输入验证码的方式&quot;。账号就是服务器主机
-Your verification code is 237334
-Your emergency scratch codes are:  #下面会生成5个紧急验证码(当无法获取动态验证码或验证码不能使用使用可以使用这5个)
-  23037330                         #需要注意的是：这5个验证码用一个就会少一个！请保存好！
-  22153353
-  56825949
-  98098052
-  63067449
+            <p><img src="https://i.loli.net/2020/02/18/9kzvwla7ELrmRu8.jpg" alt=""></p>
+<h3 id="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠）"><a href="#1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠）" class="headerlink" title="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠）"></a>1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠）</h3><pre><code> dnf install @xfce-desktop-environment -y</code></pre><p>安装过程点久</p>
+<h3 id="2、安装vnc"><a href="#2、安装vnc" class="headerlink" title="2、安装vnc"></a>2、安装vnc</h3><pre><code>yum install tigervnc-server -y</code></pre><h3 id="3、在哪个用户下运行，远程桌面与密码就是哪个用户的。"><a href="#3、在哪个用户下运行，远程桌面与密码就是哪个用户的。" class="headerlink" title="3、在哪个用户下运行，远程桌面与密码就是哪个用户的。"></a>3、在哪个用户下运行，远程桌面与密码就是哪个用户的。</h3><p>#su到自己的用户下执行</p>
+<pre><code>[root@dev ~]# vncserver :2    #在root用户下操作，远程之后就是root
+You will require a password to access your desktops.
 
-Do you want me to update your &quot;/root/.google_authenticator&quot; file (y/n) y  #提示是否要更新验证文件，选择y
-Do you want to disallow multiple uses of the same authentication
-token? This restricts you to one login about every 30s, but it increases
-your chances to notice or even prevent man-in-the-middle attacks (y/n) y #禁止使用相同口令
+Password:
+Verify:
+Would you like to enter a view-only password (y/n)? n
 
-By default, tokens are good for 30 seconds and in order to compensate for possible time-skew between the client and the server, we allow an extra
-token before and after the current time. If you experience problems with poor
-time synchronization, you can increase the window from its default
-size of 1:30min to about 4min. Do you want to do so (y/n) n #默认动态验证码在30秒内有效，由于客户端和服务器可能会存在时间差，可将时间增加到最长4分钟，是否要这么做：这里选择是n，继续默认30秒
+New &#39;dev.hnstc.egrant.cn:2 (root)&#39; desktop is dev.hnstc.egrant.cn:2
 
-If the computer that you are logging into isn&#39;t hardened against brute-force login attempts, you can enable rate-limiting for the authentication module. By default, this limits attackers to no more than 3 login attempts every 30s. Do you want to enable rate-limiting (y/n) y #是否限制尝试次数，每30秒只能尝试最多3次，这里选择y进行限制 </code></pre><p>使用google authenticator 手机客户端扫描二维码 连接成功后</p>
-<p>#每30秒换一个</p>
-</br>
+Creating default startup script /root/.vnc/xstartup
+Creating default config /root/.vnc/config
+Starting applications specified in /root/.vnc/xstartup
+Log file is /root/.vnc/dev.hnstc.egrant.cn:2.log
 
-<p>系统配置pam<br>/etc/pam.d/sshd 在第一行添加</p>
-<pre><code>auth required /usr/google/lib/security/pam_google_authenticator.so</code></pre></br>
+[root@dev ~]# ps -ef | grep vnc
+root      3306     1  0 17:01 pts/1    00:00:00 /usr/bin/Xvnc :2 -auth /root/.Xauthority -desktop dev.hnstc.egrant.cn:2 (root) -fp catalogue:/etc/X11/fontpath.d -geometry 1024x768 -pn -rfbauth /root/.vnc/passwd -rfbport 5902 -rfbwait 30000
+root      3316     1  0 17:01 pts/1    00:00:00 /usr/bin/vncconfig -nowin
+root      3741  2312  0 17:01 pts/1    00:00:00 grep --color=auto vnc
+[root@dev ~]#，</code></pre><h3 id="4、替换xstartup内容"><a href="#4、替换xstartup内容" class="headerlink" title="4、替换xstartup内容"></a>4、替换xstartup内容</h3><pre><code>vi /home/&lt;你的用户&gt;/.vnc/xstartup 替换为以下内容
 
-<p>配置sshd<br>/etc/ssh/sshd_config 修改一个字段为</p>
-<pre><code>ChallengeResponseAuthentication yes</code></pre><p>重载ssh服务</p>
-<pre><code>service sshd reload</code></pre></br>
-使用CRT ssh时 要配置
-
-<p><img src="https://i.loli.net/2019/08/20/zFUIMQcWdtJkgOY.png" alt="googleauth_1.png"></p>
-</br>
-
-<p>连接时 第一个弹窗时google auth的验证码 第二个是root的密码</p>
-<p><img src="https://i.loli.net/2019/08/20/BKtfI4n2GHxm18z.png" alt="googleauth_2.png"></p>
+#!/bin/sh
+# Uncomment the following two lines for normal desktop:
+unset SESSION_MANAGER
+#exec /etc/X11/xinit/xinitrc
+[ -x /etc/vnc/xstartup ] &amp;&amp; exec /etc/vnc/xstartup
+[ -r $HOME/.Xresources ] &amp;&amp; xrdb $HOME/.Xresources
+xsetroot -solid grey
+vncconfig -iconic &amp;
+#xterm -geometry 80x24+10+10 -ls -title &quot;$VNCDESKTOP Desktop&quot;&amp;
+#twm &amp;
+startxfce4 &amp;</code></pre><p>再重启下vnc</p>
+<pre><code>vncserver -kill :2   #停止服务</code></pre><pre><code>vncserver :2  #开启服务</code></pre><h3 id="5、然后使用客户端远程"><a href="#5、然后使用客户端远程" class="headerlink" title="5、然后使用客户端远程"></a>5、然后使用客户端远程</h3><p><img src="https://i.loli.net/2020/02/19/1T9ixSOYjlqCItE.png" alt="1.png"></p>
+<h3 id="6、输入IP-5902"><a href="#6、输入IP-5902" class="headerlink" title="6、输入IP:5902"></a>6、输入IP:5902</h3><p><img src="https://i.loli.net/2020/02/19/F961hjS8xbyomvX.png" alt="2.png"></p>
+<p>继续<br><img src="https://i.loli.net/2020/02/19/QkzBJLT9qHjZcPK.png" alt="3.png"></p>
+<h3 id="7、输入你在步骤4-设置的密码"><a href="#7、输入你在步骤4-设置的密码" class="headerlink" title="7、输入你在步骤4 设置的密码"></a>7、输入你在步骤4 设置的密码</h3><p><img src="https://i.loli.net/2020/02/19/M1W8KTqzjvR9axi.png" alt="4.png"></p>
+<h3 id="8、当你不想用时，可以通过下面命令-关闭-远程桌面"><a href="#8、当你不想用时，可以通过下面命令-关闭-远程桌面" class="headerlink" title="8、当你不想用时，可以通过下面命令 关闭 远程桌面"></a>8、当你不想用时，可以通过下面命令 关闭 远程桌面</h3><pre><code>vncserver -kill :2</code></pre><p>PS:如果画面大小，可以设置分辨率 分辨率在”设置“-”显示“</p>
 
         </div>
         
@@ -246,17 +230,10 @@ If the computer that you are logging into isn&#39;t hardened against brute-force
 <div class="card card-transparent">
     <div class="level post-navigation is-flex-wrap is-mobile">
         
-        <div class="level-start">
-            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/08/21/iptables基础笔记/">
-                <i class="level-item fas fa-chevron-left"></i>
-                <span class="level-item">iptables基础笔记</span>
-            </a>
-        </div>
-        
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2019/08/20/find查找文件的技巧/">
-                <span class="level-item">find查找文件的技巧</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/01/13/Ra1nUSBv2-0-Intel启动异常解决办法/">
+                <span class="level-item">Ra1nUSBv2.0-Intel启动异常解决办法</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -488,7 +465,7 @@ If the computer that you are logging into isn&#39;t hardened against brute-force
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.png" alt="google Authenticator加强ssh" height="28">
+                    <img src="/images/logo.png" alt="fedora机器远程（vnc）" height="28">
                 
                 </a>
                 <p class="is-size-7">
