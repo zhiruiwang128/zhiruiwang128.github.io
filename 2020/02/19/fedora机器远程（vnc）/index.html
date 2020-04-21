@@ -10,18 +10,15 @@
 <title>fedora机器远程（vnc） - R博客</title>
 
 
-    <meta name="description" content="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠） dnf install @xfce-desktop-environment -y安装过程点久 2、安装vncyum install tigervnc-server -y3、在哪个用户下运行，远程桌面与密码就是哪个用户的。#su到自己的用户下执行 [root@dev ~]# vncserver :2">
-<meta property="og:type" content="article">
+    <meta property="og:type" content="article">
 <meta property="og:title" content="fedora机器远程（vnc）">
 <meta property="og:url" content="http://wangzhirui.com/2020/02/19/fedora机器远程（vnc）/index.html">
 <meta property="og:site_name" content="R博客">
-<meta property="og:description" content="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠） dnf install @xfce-desktop-environment -y安装过程点久 2、安装vncyum install tigervnc-server -y3、在哪个用户下运行，远程桌面与密码就是哪个用户的。#su到自己的用户下执行 [root@dev ~]# vncserver :2">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://wangzhirui.com/images/og_image.png">
-<meta property="og:updated_time" content="2020-02-19T05:52:46.980Z">
+<meta property="og:updated_time" content="2020-04-21T02:16:43.965Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="fedora机器远程（vnc）">
-<meta name="twitter:description" content="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠） dnf install @xfce-desktop-environment -y安装过程点久 2、安装vncyum install tigervnc-server -y3、在哪个用户下运行，远程桌面与密码就是哪个用户的。#su到自己的用户下执行 [root@dev ~]# vncserver :2">
 <meta name="twitter:image" content="http://wangzhirui.com/images/og_image.png">
 
 
@@ -149,7 +146,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    3 分钟 读完 (大约 434 个字)
+                    3 分钟 读完 (大约 435 个字)
                 </span>
                 
                 
@@ -168,6 +165,8 @@
         </h1>
         <div class="content">
             <p><img src="https://i.loli.net/2020/02/18/9kzvwla7ELrmRu8.jpg" alt=""></p>
+<a id="more"></a>
+
 <h3 id="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠）"><a href="#1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠）" class="headerlink" title="1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠）"></a>1、安装xfce桌面（注意直接复制命令会现横杠不对，执行时，注意检查横杠，也可以手打横杠）</h3><pre><code> dnf install @xfce-desktop-environment -y</code></pre><p>安装过程点久</p>
 <h3 id="2、安装vnc"><a href="#2、安装vnc" class="headerlink" title="2、安装vnc"></a>2、安装vnc</h3><pre><code>yum install tigervnc-server -y</code></pre><h3 id="3、在哪个用户下运行，远程桌面与密码就是哪个用户的。"><a href="#3、在哪个用户下运行，远程桌面与密码就是哪个用户的。" class="headerlink" title="3、在哪个用户下运行，远程桌面与密码就是哪个用户的。"></a>3、在哪个用户下运行，远程桌面与密码就是哪个用户的。</h3><p>#su到自己的用户下执行</p>
 <pre><code>[root@dev ~]# vncserver :2    #在root用户下操作，远程之后就是root
